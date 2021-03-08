@@ -116,12 +116,12 @@ libcap-devel-2.26-2.cm1.x86_64.rpm
 libdb-5.3.28-4.cm1.x86_64.rpm
 libdb-devel-5.3.28-4.cm1.x86_64.rpm
 libdb-docs-5.3.28-4.cm1.x86_64.rpm
-rpm-4.14.2-10.cm1.x86_64.rpm
-rpm-build-4.14.2-10.cm1.x86_64.rpm
-rpm-build-libs-4.14.2-10.cm1.x86_64.rpm
-rpm-devel-4.14.2-10.cm1.x86_64.rpm
-rpm-lang-4.14.2-10.cm1.x86_64.rpm
-rpm-libs-4.14.2-10.cm1.x86_64.rpm
+rpm-4.14.2-11.cm1.x86_64.rpm
+rpm-build-4.14.2-11.cm1.x86_64.rpm
+rpm-build-libs-4.14.2-11.cm1.x86_64.rpm
+rpm-devel-4.14.2-11.cm1.x86_64.rpm
+rpm-lang-4.14.2-11.cm1.x86_64.rpm
+rpm-libs-4.14.2-11.cm1.x86_64.rpm
 cpio-2.13-2.cm1.x86_64.rpm
 cpio-lang-2.13-2.cm1.x86_64.rpm
 e2fsprogs-libs-1.44.6-4.cm1.x86_64.rpm
@@ -144,7 +144,7 @@ libltdl-2.4.6-5.cm1.x86_64.rpm
 libltdl-devel-2.4.6-5.cm1.x86_64.rpm
 pcre-libs-8.44-1.cm1.x86_64.rpm
 krb5-1.17-4.cm1.x86_64.rpm
-lua-5.3.5-8.cm1.x86_64.rpm
+lua-5.4.2-1.cm1.x86_64.rpm
 mariner-rpm-macros-1.0-3.cm1.noarch.rpm
 mariner-check-macros-1.0-3.cm1.noarch.rpm
 libassuan-2.5.1-3.cm1.x86_64.rpm

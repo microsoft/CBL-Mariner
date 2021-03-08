@@ -1,0 +1,78 @@
+Submitted By:            Douglas R. Reno <renodr at linuxfromscratch dot org>
+Date:                    2020-06-30
+Initial Package Version: 5.4.0
+Upstream Status:         Rejected
+Origin:                  Arch Linux, with some modifications
+Description:             Creates a shared liblua library, as well as
+                         removes optimization since it causes SIGBUS errors,
+                         and sets the search path to /usr from /usr/local.
+                         The initial version of this patch was created by
+                         Igor Zivkovic, before being rediffed for 5.4.0 by
+                         myself with some modifications made.
+
+diff -Naurp lua-5.4.0.orig/Makefile lua-5.4.0/Makefile
+--- lua-5.4.0.orig/Makefile	2020-04-15 07:55:07.000000000 -0500
++++ lua-5.4.0/Makefile	2020-06-30 13:22:00.997938585 -0500
+@@ -52,7 +52,7 @@ R= $V.0
+ all:	$(PLAT)
+ 
+ $(PLATS) help test clean:
+-	@cd src && $(MAKE) $@
++	@cd src && $(MAKE) $@ V=$(V) R=$(R)
+ 
+ install: dummy
+ 	cd src && $(MKDIR) $(INSTALL_BIN) $(INSTALL_INC) $(INSTALL_LIB) $(INSTALL_MAN) $(INSTALL_LMOD) $(INSTALL_CMOD)
+diff -Naurp lua-5.4.0.orig/src/luaconf.h lua-5.4.0/src/luaconf.h
+--- lua-5.4.0.orig/src/luaconf.h	2020-06-18 09:25:54.000000000 -0500
++++ lua-5.4.0/src/luaconf.h	2020-06-30 13:24:59.294932289 -0500
+@@ -227,7 +227,7 @@
+ 
+ #else			/* }{ */
+ 
+-#define LUA_ROOT	"/usr/local/"
++#define LUA_ROOT	"/usr/"
+ #define LUA_LDIR	LUA_ROOT "share/lua/" LUA_VDIR "/"
+ #define LUA_CDIR	LUA_ROOT "lib/lua/" LUA_VDIR "/"
+ 
+diff -Naurp lua-5.4.0.orig/src/Makefile lua-5.4.0/src/Makefile
+--- lua-5.4.0.orig/src/Makefile	2020-04-15 08:00:29.000000000 -0500
++++ lua-5.4.0/src/Makefile	2020-06-30 13:24:15.746933827 -0500
+@@ -7,7 +7,7 @@
+ PLAT= guess
+ 
+ CC= gcc -std=gnu99
+-CFLAGS= -O2 -Wall -Wextra -DLUA_COMPAT_5_3 $(SYSCFLAGS) $(MYCFLAGS)
++CFLAGS= -fPIC -O0 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_COMPAT_5_2 -DLUA_COMPAT_5_1 $(SYSCFLAGS) $(MYCFLAGS)
+ LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
+ LIBS= -lm $(SYSLIBS) $(MYLIBS)
+ 
+@@ -33,6 +33,7 @@ CMCFLAGS= -Os
+ PLATS= guess aix bsd c89 freebsd generic linux linux-readline macosx mingw posix solaris
+ 
+ LUA_A=	liblua.a
++LUA_SO=  liblua.so
+ CORE_O=	lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o lmem.o lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o ltm.o lundump.o lvm.o lzio.o
+ LIB_O=	lauxlib.o lbaselib.o lcorolib.o ldblib.o liolib.o lmathlib.o loadlib.o loslib.o lstrlib.o ltablib.o lutf8lib.o linit.o
+ BASE_O= $(CORE_O) $(LIB_O) $(MYOBJS)
+@@ -44,7 +45,7 @@ LUAC_T=	luac
+ LUAC_O=	luac.o
+ 
+ ALL_O= $(BASE_O) $(LUA_O) $(LUAC_O)
+-ALL_T= $(LUA_A) $(LUA_T) $(LUAC_T)
++ALL_T= $(LUA_A) $(LUA_T) $(LUAC_T) $(LUA_SO)
+ ALL_A= $(LUA_A)
+ 
+ # Targets start here.
+@@ -60,6 +61,12 @@ $(LUA_A): $(BASE_O)
+ 	$(AR) $@ $(BASE_O)
+ 	$(RANLIB) $@
+ 
++$(LUA_SO): $(CORE_O) $(LIB_O)
++	$(CC) -shared -ldl -Wl,--soname,$(LUA_SO).$(V) -o $@.$(R) $? -lm
++	$(MYLDFLAGS)
++	ln -sf $(LUA_SO).$(R) $(LUA_SO).$(V)
++	ln -sf $(LUA_SO).$(R) $(LUA_SO)
++
+ $(LUA_T): $(LUA_O) $(LUA_A)
+ 	$(CC) -o $@ $(LDFLAGS) $(LUA_O) $(LUA_A) $(LIBS)
+ 

@@ -1,7 +1,7 @@
 Summary:        Nmap Network Mapper
 Name:           nmap
 Version:        7.90
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Nmap
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -57,7 +57,10 @@ ln -s ncat %{buildroot}%{_bindir}/nc
 %{_bindir}/nc
 
 %changelog
-* Tue Feb 02 2021 Henry Beberman <henry.beberman@microsoft.com> 7.90-1
+* Thu Feb 11 2021 Thomas Crain <thcrain@microsoft.com> - 7.90-2
+- Bump release version alongside upgrade to lua 5.4.2
+
+* Tue Feb 02 2021 Henry Beberman <henry.beberman@microsoft.com> - 7.90-1
 - Add nmap spec
 - License verified
 - Original version for CBL-Mariner
