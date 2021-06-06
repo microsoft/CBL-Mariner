@@ -1,7 +1,7 @@
 Summary:        Bootstrap version of systemd. Workaround for systemd circular dependency.
 Name:           systemd-bootstrap
 Version:        239
-Release:        33%{?dist}
+Release:        34%{?dist}
 License:        LGPLv2+ AND GPLv2+ AND MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -41,6 +41,7 @@ Patch22:        CVE-2020-13776.patch
 # DoT is only enabled when systemd is build against gnutls.
 # Furthermore, strict mode DoT is not supported before v243.
 Patch23:        CVE-2018-21029.nopatch
+Patch1000:      0001-udevd-drop-redundant-logic-of-receiving-uevent.patch
 BuildRequires:  docbook-dtd-xml
 BuildRequires:  docbook-style-xsl
 BuildRequires:  gettext
@@ -247,6 +248,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Thu Jun 03 2021 Chris Co <chrco@microsoft.com> - 239-34
+- Add patch to remove redundant on_uevent call from on_inotify.
+
 * Thu Mar 11 2021 Chris Co <chrco@microsoft.com> - 239-33
 - Disallow unprivileged BPF scripts by default. Additional mitigation for CVE-2021-20194
 

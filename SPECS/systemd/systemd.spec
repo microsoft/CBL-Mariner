@@ -1,7 +1,7 @@
 Summary:        Systemd-239
 Name:           systemd
 Version:        239
-Release:        36%{?dist}
+Release:        37%{?dist}
 License:        LGPLv2+ AND GPLv2+ AND MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -49,6 +49,7 @@ Patch103:       103-core-allow-portablectl-to-load-new-services-without-.patch
 Patch104:       104-portablectl-block-when-stopping-a-unit-on-detach-now.patch
 Patch105:       105-portablectl-use-replace-unload-when-stopping-a-servi.patch
 Patch106:       106-portabled-implement-container-host-os-release-interf.patch
+Patch1000:      0001-udevd-drop-redundant-logic-of-receiving-uevent.patch
 BuildRequires:  cryptsetup-devel
 BuildRequires:  docbook-dtd-xml
 BuildRequires:  docbook-style-xsl
@@ -270,6 +271,9 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Thu Jun 03 2021 Chris Co <chrco@microsoft.com> - 239-37
+- Add patch to remove redundant on_uevent call from on_inotify.
+
 * Thu Mar 11 2021 Chris Co <chrco@microsoft.com> - 239-36
 - Disallow unprivileged BPF scripts by default. Additional mitigation for CVE-2021-20194
 

@@ -1,0 +1,34 @@
+From 0caa8ec6eba9d4e35816f8658e8f7de5a3a68cf5 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Tue, 6 Nov 2018 17:46:00 +0900
+Subject: [PATCH] udevd: drop redundant logic of receiving uevent
+
+If there exists pending uevents, then sd-event invokes uevent handler.
+So, it is not necessary to receive the next uevent in inotify event.
+
+diff --git a/src/udev/udevd.c b/src/udev/udevd.c
+index 34f6a95503..bbdf63cc04 100644
+--- a/src/udev/udevd.c
++++ b/src/udev/udevd.c
+@@ -1133,16 +1133,9 @@ static int on_inotify(sd_event_source *s, int fd, uint32_t revents, void *userda
+                         continue;
+ 
+                 log_debug("inotify event: %x for %s", e->mask, udev_device_get_devnode(dev));
+-                if (e->mask & IN_CLOSE_WRITE) {
++                if (e->mask & IN_CLOSE_WRITE)
+                         synthesize_change(dev);
+-
+-                        /* settle might be waiting on us to determine the queue
+-                         * state. If we just handled an inotify event, we might have
+-                         * generated a "change" event, but we won't have queued up
+-                         * the resultant uevent yet. Do that.
+-                         */
+-                        on_uevent(NULL, -1, 0, manager);
+-                } else if (e->mask & IN_IGNORED)
++                else if (e->mask & IN_IGNORED)
+                         udev_watch_end(manager->udev, dev);
+         }
+ 
+-- 
+2.17.1
+
