@@ -1,36 +1,13 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
-Version:        2.32
-Release:        5%{?dist}
+Version:        2.36.1
+Release:        1%{?dist}
 License:        GPLv2+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          System Environment/Base
 URL:            https://www.gnu.org/software/binutils
 Source0:        https://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
-Patch0:         CVE-2019-9070.nopatch
-Patch1:         CVE-2019-9075.patch
-Patch2:         CVE-2019-9077.patch
-Patch3:         CVE-2019-12972.patch
-Patch4:         CVE-2019-14250.patch
-Patch5:         CVE-2019-14444.patch
-Patch6:         CVE-2019-9071.patch
-# Binutils commmunity does not consider this a bug
-Patch7:         CVE-2019-9072.nopatch
-Patch8:         CVE-2019-9073.patch
-Patch9:         CVE-2019-9074.patch
-# Binutils community does not consider this a bug
-Patch10:        CVE-2019-9076.nopatch
-Patch11:        CVE-2019-17450.patch
-Patch12:        CVE-2019-17451.patch
-Patch13:        CVE-2020-35493.patch
-Patch14:        CVE-2020-35494-helper.patch
-Patch15:        CVE-2020-35494.patch
-Patch16:        CVE-2020-35495.patch
-# Fix is included in CVE-2020-35495.patch.
-Patch17:        CVE-2020-35496.nopatch
-# Fix is included in CVE-2020-35495.patch.
-Patch18:        CVE-2020-35507.nopatch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -124,19 +101,33 @@ make %{?_smp_mflags} check
 %{_includedir}/dis-asm.h
 %{_includedir}/bfd_stdint.h
 %{_includedir}/diagnostics.h
+%{_includedir}/ctf-api.h
+%{_includedir}/ctf.h
 %{_libdir}/libbfd.a
 %{_libdir}/libopcodes.a
 %{_libdir}/libbfd.so
 %{_libdir}/libopcodes.so
+%{_libdir}/bfd-plugins/libdep.so
+%{_libdir}/libctf-nobfd.a
+%{_libdir}/libctf-nobfd.so
+%{_libdir}/libctf-nobfd.so.0
+%{_libdir}/libctf-nobfd.so.0.*
+%{_libdir}/libctf.a
+%{_libdir}/libctf.so
+%{_libdir}/libctf.so.0
+%{_libdir}/libctf.so.0.*
 
 %changelog
-* Mon Jan 11 2021 Emre Girgin <mrgirgin@microsoft.com> - 2.32-5
-- Update URL and Source0 to use https.
-- Fix CVE-2020-35493.
-- Fix CVE-2020-35494.
-- Fix CVE-2020-35495.
-- Fix CVE-2020-35496.
-- Fix CVE-2020-35507.
+*   Tue May 11 2021 Andrew Phelps <anphel@microsoft.com> 2.36.1-1
+-   Update to version 2.36.1
+
+*   Mon Jan 11 2021 Emre Girgin <mrgirgin@microsoft.com> 2.32-5
+-   Update URL and Source0 to use https.
+-   Fix CVE-2020-35493.
+-   Fix CVE-2020-35494.
+-   Fix CVE-2020-35495.
+-   Fix CVE-2020-35496.
+-   Fix CVE-2020-35507.
 
 *   Thu Oct 22 2020 Nicolas Ontiveros <niontive@microsoft.com> 2.32-4
 -   Use autosetup

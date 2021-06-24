@@ -5,7 +5,7 @@
 Summary:        Simple and easy way to configure a layer 3 network fabric designed for Kubernetes
 Name:           flannel
 Version:        0.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -58,5 +58,7 @@ rm -rf %{gopath_flannel_folder}/*
 %{_bindir}/flanneld
 
 %changelog
+* Mon Apr 26 2021 Nicolas Guibourge <nicolasg@microsoft.com> 0.12.0-2
+- Increment release to force republishing using golang 1.15.11.
 * Wed Jan 20 2021 Nicolas Guibourge <nicolasg@microsoft.com> - 0.12.0-1
 - Original version for CBL-Mariner.

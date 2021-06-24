@@ -125,7 +125,11 @@ clean-chroot-tools:
 	rm -rf $(BUILD_DIR)/worker && \
 	rm -rf $(BUILD_DIR)/validatechroot
 
-worker_chroot_manifest = $(TOOLCHAIN_MANIFESTS_DIR)/pkggen_core_$(build_arch).txt
+# Worker chroot manifest is a file corresponding to the TOOLCHAIN_MANIFEST name.
+toolchain_config_name=$(notdir $(TOOLCHAIN_MANIFEST))
+worker_manifest_name=$(shell echo "$(toolchain_config_name)" | sed -E 's:^toolchain:pkggen_core:' )
+worker_chroot_manifest = $(TOOLCHAIN_MANIFESTS_DIR)/$(worker_manifest_name)
+#$(TOOLCHAIN_MANIFESTS_DIR)/pkggen_core_$(build_arch).txt
 # Find the *.rpm corresponding to each of the entries in the manifest
 # regex operation: (.*\.([^\.]+)\.rpm) extracts *.(<arch>).rpm" to determine
 # the exact path of the required rpm

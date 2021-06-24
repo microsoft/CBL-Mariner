@@ -1,0 +1,30 @@
+diff --git a/common/parse.c b/common/parse.c
+index 386a6321..fc7b39c6 100644
+--- a/common/parse.c
++++ b/common/parse.c
+@@ -3,7 +3,7 @@
+    Common parser code for dhcpd and dhclient. */
+ 
+ /*
+- * Copyright (c) 2004-2019 by Internet Systems Consortium, Inc. ("ISC")
++ * Copyright (c) 2004-2021 by Internet Systems Consortium, Inc. ("ISC")
+  * Copyright (c) 1995-2003 by Internet Software Consortium
+  *
+  * This Source Code Form is subject to the terms of the Mozilla Public
+@@ -5556,13 +5556,14 @@ int parse_X (cfile, buf, max)
+ 				skip_to_semi (cfile);
+ 				return 0;
+ 			}
+-			convert_num (cfile, &buf [len], val, 16, 8);
+-			if (len++ > max) {
++			if (len >= max) {
+ 				parse_warn (cfile,
+ 					    "hexadecimal constant too long.");
+ 				skip_to_semi (cfile);
+ 				return 0;
+ 			}
++			convert_num (cfile, &buf [len], val, 16, 8);
++			len++;
+ 			token = peek_token (&val, (unsigned *)0, cfile);
+ 			if (token == COLON)
+ 				token = next_token (&val,

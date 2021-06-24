@@ -41,6 +41,33 @@ $(BUILD_SRPMS_DIR): $(STATUS_FLAGS_DIR)/build_srpms.flag
 	@echo Finished updating $@
 
 ifeq ($(DOWNLOAD_SRPMS),y)
+
+.SILENT: $(STATUS_FLAGS_DIR)/build_srpms.flag
+
+ifeq ($(ALLOW_SRPM_DOWNLOAD_FAIL),y)
+$(STATUS_FLAGS_DIR)/build_srpms.flag: $(local_specs) $(local_spec_dirs) $(SPECS_DIR) $(LOGS_DIR)/pkggen
+	for spec in $(local_specs); do \
+		spec_file=$${spec} && \
+		spec_name=$$(basename "$${spec_file}") && \
+		srpm_file=$$(rpmspec -q $${spec_file} --srpm --define='with_check 1' --define='dist $(DIST_TAG)' --queryformat %{NAME}-%{VERSION}-%{RELEASE}.src.rpm 2>"$(LOGS_DIR)/pkggen/$${spec_name}") && \
+		log_file="$(LOGS_DIR)/pkggen/$$srpm_file.log" && \
+		mkdir -p $(BUILD_SRPMS_DIR) && \
+		cd $(BUILD_SRPMS_DIR) && \
+		touch $(BUILD_SRPMS_DIR)/$${srpm_file} && \
+		for url in $(SRPM_URL_LIST); do \
+			wget $${url}/$${srpm_file} \
+				$(if $(TLS_CERT),--certificate=$(TLS_CERT)) \
+				$(if $(TLS_KEY),--private-key=$(TLS_KEY)) \
+				-a $$log_file && \
+			break; \
+		done && echo "Downloaded $${url}/$${srpm_file}"; \
+	done ; \
+	echo "Removing empty (failed) SRPMS: "
+	find $(BUILD_SRPMS_DIR) -type f -empty -delete -print | tee $(LOGS_DIR)/pkggen/deleted-srpms.log
+	echo "Removed all empty SRPMS. Finished packing."
+	touch $@
+
+else
 $(STATUS_FLAGS_DIR)/build_srpms.flag: $(local_specs) $(local_spec_dirs) $(SPECS_DIR)
 	for spec in $(local_specs); do \
 		spec_file=$${spec} && \
@@ -59,6 +86,7 @@ $(STATUS_FLAGS_DIR)/build_srpms.flag: $(local_specs) $(local_spec_dirs) $(SPECS_
 			$(call print_error,Failed to download $${srpm_file});  } \
 	done || $(call print_error,Loop in $@ failed) ; \
 	touch $@
+endif
 
 # Since all the SRPMs are being downloaded by the "input-srpms" target there is no need to differentiate toolchain srpms.
 $(STATUS_FLAGS_DIR)/build_toolchain_srpms.flag: $(STATUS_FLAGS_DIR)/build_srpms.flag

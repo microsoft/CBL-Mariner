@@ -3,7 +3,7 @@
 %global debug_package %{nil}
 Summary:        C library for embedded Linux
 Name:           uclibc-ng
-Version:        1.0.36
+Version:        1.0.37
 Release:        1%{?dist}
 License:        LGPLv2
 Vendor:         Microsoft Corporation
@@ -81,6 +81,9 @@ rm -rf  %{buildroot}/include/
 %{_libdir}/uClibc
 
 %changelog
+* Wed May 05 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 1.0.37-1
+- Updating to version 1.0.37 to fix CVE-2021-27419.
+
 * Thu Oct 15 2020 Mateusz Malisz <mamalisz@microsoft.com> - 1.0.36-1
 - Initial CBL-Mariner import from Fedora 32 (license: MIT)
 - License Verified

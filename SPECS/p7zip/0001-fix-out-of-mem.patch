@@ -1,0 +1,26 @@
+diff --git a/C/Alloc.c b/C/Alloc.c
+index 2706ec0..3178e7a 100644
+--- a/C/Alloc.c
++++ b/C/Alloc.c
+@@ -58,12 +58,18 @@ void align_free(void * ptr)
+ #else
+ void *align_alloc(size_t size)
+ {
+-    return malloc(size);
++    void * p = malloc(size);
++    if(!p){
++        printf("Out of memory: can't allocate %u bytes\n",size);
++	abort();
++    }
++    return p;
+ }
+ 
+ void align_free(void * ptr)
+ {
+-  free(ptr);
++   if(!ptr) return;
++   free(ptr);
+ }
+ 
+ #endif
+

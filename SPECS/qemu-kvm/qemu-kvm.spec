@@ -1,7 +1,7 @@
 Summary:        QEMU is a machine emulator and virtualizer
 Name:           qemu-kvm
 Version:        4.2.0
-Release:        29%{?dist}
+Release:        30%{?dist}
 License:        GPLv2 AND GPLv2+ AND CC-BY AND BSD
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -110,6 +110,9 @@ This package provides a command line tool for manipulating disk images.
 %patch33 -p1
 %patch34 -p1
 
+# Remove invalid flag exposed by binutils 2.36.1
+sed -i "/LDFLAGS_NOPIE/d" configure
+
 %build
 
 %ifarch aarch64
@@ -205,6 +208,9 @@ fi
 %{_bindir}/qemu-nbd
 
 %changelog
+* Tue May 11 2021 Andrew Phelps <anphel@microsoft.com> - 4.2.0-30
+- Remove LDFLAGS_NOPIE to compile with binutils 2.36.1
+
 * Wed Apr 07 2021 Neha Agarwal <nehaagarwal@microsoft.com> - 4.2.0-29
 - Patch CVE-2021-3392 and CVE-2021-3409.
 

@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        12.6
+Version:        12.7
 Release:        1%{?dist}
 License:        PostgreSQL
 Vendor:         Microsoft Corporation
@@ -169,6 +169,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+* Fri Jun 11 2021 Henry Beberman <henry.beberman@microsoft.com> - 12.7-1
+- Update to version 12.7 to resolve CVE-2021-32027.
+
 * Tue Mar 02 2021 Neha Agarwal <nehaagarwal@microsoft.com> - 12.6-1
 - Update package version to resolve CVE-2021-20229 and CVE-2021-3393.
 

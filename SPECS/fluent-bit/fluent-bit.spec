@@ -2,8 +2,8 @@
 
 Name:           fluent-bit
 Summary:        Fast and Lightweight Log processor and forwarder for Linux, BSD and OSX
-Version:        1.4.1
-Release:        2%{?dist}
+Version:        1.5.2
+Release:        1%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -46,9 +46,12 @@ make install DESTDIR=%{buildroot}
 
 %files devel
 %{_includedir}/*
-/usr/lib64/*.so
+/usr/lib64/fluent-bit/*.so
 
 %changelog
+* Mon May 24 2021 Suresh Babu Chalamalasetty <schalam@microsoft.com> 1.5.2-1
+- Update to version 1.5.2
+
 * Mon Oct 19 2020 Pawel Winogrodzki <pawelwi@microsoft.com> 1.4.1-2
 - License verified.
 - Fixed source URL.

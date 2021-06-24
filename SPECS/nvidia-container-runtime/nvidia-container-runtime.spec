@@ -1,7 +1,7 @@
 Summary:        NVIDIA container runtime
 Name:           nvidia-container-runtime
 Version:        3.4.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -33,6 +33,9 @@ install -m 755 %{name} %{buildroot}%{_bindir}/%{name}
 %{_bindir}/%{name}
 
 %changelog
+* Mon Apr 26 2021 Nicolas Guibourge <nicolasg@microsoft.com> 3.4.2-3
+- Increment release to force republishing using golang 1.15.11.
+
 * Wed Apr 21 2021 Joseph Knierman <jknierman@microsoft.com> - 3.4.2-2
 - License verified
 - Initial CBL-Mariner import from NVIDIA (license: ASL 2.0).

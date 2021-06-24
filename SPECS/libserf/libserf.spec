@@ -1,7 +1,7 @@
 Summary:        A high performance C-based HTTP client library built upon the Apache Portable Runtime (APR) library
 Name:           libserf
 Version:        1.3.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            https://serf.apache.org/
 Group:          System Environment/Libraries
@@ -52,6 +52,9 @@ sed -i '/SUITE_ADD_TEST(suite, test_ssltunnel_basic_auth_server_has_keepalive_of
 sed -i '/SUITE_ADD_TEST(suite, test_ssltunnel_basic_auth_proxy_has_keepalive_off);/d' ./test/test_context.c
 sed -i '/SUITE_ADD_TEST(suite, test_ssltunnel_basic_auth_proxy_close_conn_on_200resp);/d' ./test/test_context.c
 sed -i '/SUITE_ADD_TEST(suite, test_ssltunnel_digest_auth);/d' ./test/test_context.c
+
+# OpenSSL 1.1.1i+ breaks test_ssl_handshake, so disable test_ssl_handshake
+sed -i '/SUITE_ADD_TEST(suite, test_ssl_handshake);/d' ./test/test_context.c
 scons check
 
 %files
@@ -67,6 +70,9 @@ scons check
 
 
 %changelog
+*   Tue May 04 2021 Nicolas Ontiveros <niontive@microsoft.com> 1.3.9-6
+-   Disable test_ssl_handshake
+
 *   Mon Dec 07 2020 Andrew Phelps <anphel@microsoft.com> 1.3.9-5
 -   Fix check tests.
 *   Sat May 09 2020 Nick Samson <nisamson@microsoft.com> 1.3.9-4

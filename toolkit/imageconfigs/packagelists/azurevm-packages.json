@@ -1,0 +1,10 @@
+{
+    "packages": [
+        "cloud-init",
+        "cloud-utils-growpart",
+        "dhcp-client",
+        "hyperv-daemons",
+        "openssh-server",
+        "WALinuxAgent"
+    ]
+}

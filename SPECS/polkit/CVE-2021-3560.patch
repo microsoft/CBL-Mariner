@@ -1,0 +1,27 @@
+From a04d13affe0fa53ff618e07aa8f57f4c0e3b9b81 Mon Sep 17 00:00:00 2001
+From: Jan Rybar <jrybar@redhat.com>
+Date: Wed, 2 Jun 2021 15:43:38 +0200
+Subject: [PATCH] GHSL-2021-074: authentication bypass vulnerability in polkit
+
+initial values returned if error caught
+---
+ src/polkit/polkitsystembusname.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/polkit/polkitsystembusname.c b/src/polkit/polkitsystembusname.c
+index 8daa12c..8ed1363 100644
+--- a/src/polkit/polkitsystembusname.c
++++ b/src/polkit/polkitsystembusname.c
+@@ -435,6 +435,9 @@ polkit_system_bus_name_get_creds_sync (PolkitSystemBusName           *system_bus
+   while (!((data.retrieved_uid && data.retrieved_pid) || data.caught_error))
+     g_main_context_iteration (tmp_context, TRUE);
+ 
++  if (data.caught_error)
++    goto out;
++
+   if (out_uid)
+     *out_uid = data.uid;
+   if (out_pid)
+-- 
+GitLab
+

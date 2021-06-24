@@ -23,7 +23,7 @@ image_time=0
 . $dracutbasedir/dracut-functions.sh
 . /lib/kdump/kdump-lib.sh
 
-standard_kexec_args="-p"
+standard_kexec_args="-s -p"
 
 # Some default values in case /etc/sysconfig/kdump doesn't include
 KDUMP_COMMANDLINE_REMOVE="hugepages hugepagesz slub_debug"

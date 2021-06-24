@@ -1,7 +1,7 @@
 Summary:        opentype text shaping engine
 Name:           harfbuzz
 Version:        2.6.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -10,7 +10,7 @@ URL:            https://harfbuzz.github.io/
 Source0:        https://www.freedesktop.org/software/harfbuzz/release/%{name}-%{version}.tar.xz
 BuildRequires:  pkg-config
 BuildRequires:  pkgconfig(fontconfig)
-BuildRequires:  pkgconfig(freetype)
+BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(icu-uc)
 Requires:       glib
@@ -64,6 +64,9 @@ find . -type f -name "*.py" -exec sed -i'' -e '1 s|^#!\s*/usr/bin/env\s\+python\
 %{_libdir}/cmake/harfbuzz/harfbuzz-config.cmake
 
 %changelog
+* Tue Jun 22 2021 Thomas Crain <thcrain@microsoft.com> - 2.6.4-3
+- Fix pkgconfig(freetype) dependency
+
 * Mon Jun 21 2021 Thomas Crain <thcrain@microsoft.com> - 2.6.4-2
 - Build harfbuzz with icu libraries, fontconfig libraries
 - Use pkgconfig(*)-style dependencies

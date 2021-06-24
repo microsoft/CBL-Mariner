@@ -1,0 +1,12 @@
+diff -ru nvidia-container-toolkit-1.4.2-orig/go.mod nvidia-container-toolkit-1.4.2/go.mod
+--- nvidia-container-toolkit-1.4.2-orig/go.mod	2021-02-05 07:47:01.000000000 -0500
++++ nvidia-container-toolkit-1.4.2/go.mod	2021-04-20 03:38:02.000000000 -0400
+@@ -4,6 +4,5 @@
+ 
+ require (
+ 	github.com/BurntSushi/toml v0.3.1
+-	github.com/stretchr/testify v1.6.0
+ 	golang.org/x/mod v0.3.0
+ )
+Only in nvidia-container-toolkit-1.4.2: nvidia-container-toolkit
+Only in nvidia-container-toolkit-1.4.2: vendor

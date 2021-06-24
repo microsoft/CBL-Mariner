@@ -1,0 +1,63 @@
+{
+    "Disks": [
+        {
+            "PartitionTableType": "gpt",
+            "MaxSize": 600,
+            "Artifacts": [
+                {
+                    "Name": "cblmariner-gen1",
+                    "Type": "vhd"
+                }
+            ],
+            "Partitions": [
+                {
+                    "ID": "boot",
+                    "Flags": [
+                        "grub"
+                    ],
+                    "Start": 1,
+                    "End": 9,
+                    "FsType": "fat32"
+                },
+                {
+                    "ID": "rootfs",
+                    "Start": 9,
+                    "End": 0,
+                    "FsType": "ext4"
+                }
+            ]
+        }
+    ],
+    "SystemConfigs": [
+        {
+            "Name": "Standard",
+            "BootType": "legacy",
+            "PartitionSettings": [
+                {
+                    "ID": "boot",
+                    "MountPoint": ""
+                },
+                {
+                    "ID": "rootfs",
+                    "MountPoint": "/"
+                }
+            ],
+            "PackageLists": [
+                "packagelists/core-packages-image.json",
+                "packagelists/azurevm-packages.json"
+            ],
+            "AdditionalFiles": {
+                "additionalconfigs/cloud-init.cfg": "/etc/cloud/cloud.cfg"
+            },
+            "PostInstallScripts": [
+                {
+                    "Path": "additionalconfigs/configure-image.sh"
+                }
+            ],
+            "KernelOptions": {
+                "default": "kernel"
+            },
+            "Hostname": "cbl-mariner"
+        }
+    ]
+}

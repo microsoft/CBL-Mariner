@@ -4,7 +4,7 @@
 Summary:        Utilities from the general purpose cryptography library with TLS implementation
 Name:           openssl
 Version:        1.1.1k
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -28,7 +28,7 @@ Patch5:         openssl-1.1.1-fips.patch
 Patch6:         openssl-1.1.1-version-override.patch
 Patch7:         openssl-1.1.1-seclevel.patch
 Patch8:         openssl-1.1.1-fips-post-rand.patch
-Patch9:        openssl-1.1.1-evp-kdf.patch
+Patch9:         openssl-1.1.1-evp-kdf.patch
 Patch10:        openssl-1.1.1-ssh-kdf.patch
 Patch11:        openssl-1.1.1-krb5-kdf.patch
 Patch12:        openssl-1.1.1-edk2-build.patch
@@ -37,9 +37,9 @@ Patch14:        openssl-1.1.1-fips-drbg-selftest.patch
 Patch15:        openssl-1.1.1-fips-dh.patch
 Patch16:        openssl-1.1.1-s390x-ecc.patch
 Patch17:        openssl-1.1.1-kdf-selftest.patch
-Patch18:        openssl-1.1.1-rewire-fips-drbg.patch
-Patch19:        openssl-1.1.1-fips-curves.patch
-Patch20:        openssl-1.1.1-sp80056arev3.patch
+Patch18:        openssl-1.1.1-fips-curves.patch
+Patch19:        openssl-1.1.1-sp80056arev3.patch
+Patch20:        openssl-1.1.1-jitterentropy.patch
 BuildRequires:  perl-Test-Warnings
 BuildRequires:  perl-Text-Template
 Requires:       %{name}-libs = %{version}-%{release}
@@ -132,7 +132,8 @@ cp %{SOURCE4} test/
 # marked as not requiring an executable stack.
 # Also add -DPURIFY to make using valgrind with openssl easier as we do not
 # want to depend on the uninitialized memory as a source of entropy anyway.
-NEW_RPM_OPT_FLAGS="%{optflags} -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY $RPM_LD_FLAGS"
+# Also add -O0 to enable optimization, which is needed for jitterentropy
+NEW_RPM_OPT_FLAGS="%{optflags} -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY $RPM_LD_FLAGS -O0"
 
 export HASHBANGPERL=%{_bindir}/perl
 
@@ -320,6 +321,11 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Jun 21 2021 Thomas Crain <thcrain@microsoft.com> - 1.1.1k-3
+- Merge the following releases from 1.0 to the dev spec:
+- niontive@microsoft.com, 1.1.1k-2: Remove FIPS DRBG rewire patch
+- niontive@microsoft.com, 1.1.1k-3: In FIPS mode, use only jitterentropy
+
 * Fri Apr 02 2021 Thomas Crain <thcrain@microsoft.com> - 1.1.1k-2
 - Merge the following releases from dev to 1.0 spec
 - joschmit@microsoft.com, 1.1.1g-7: Use new perl package names.
@@ -353,96 +359,96 @@ rm -rf %{buildroot}
 * Wed Dec 09 2020 Joe Schmitt <joschmit@microsoft.com> - 1.1.1g-8
 - Patch CVE-2020-1971.
 
-* Tue Nov 10 2020 Johnson George <johgeorg@microsoft.com> 1.1.1g-7
+* Tue Nov 10 2020 Johnson George <johgeorg@microsoft.com> - 1.1.1g-7
 - Updated the config option to enable package test
 
-* Tue Jul 28 2020 Pawel Winogrodzki <pawelwi@microsoft.com> 1.1.1g-6
+* Tue Jul 28 2020 Pawel Winogrodzki <pawelwi@microsoft.com> - 1.1.1g-6
 - Replacing removal of functions through the 'no-<prot>-method' option
   with returning a method negotiating the highest supported protocol
   version for TLS and NULL for SSLv3 in order to prevent
   link-time breaks from dependent binaries.
 
-* Thu Jun 11 2020 Joe Schmitt <joschmit@microsoft.com> 1.1.1g-5
+* Thu Jun 11 2020 Joe Schmitt <joschmit@microsoft.com> - 1.1.1g-5
 - Enable RC2 ciphers in config settings.
 
-* Wed Apr 29 2020 Paul Monson <paulmon@microsoft.com> 1.1.1g-4
+* Wed Apr 29 2020 Paul Monson <paulmon@microsoft.com> - 1.1.1g-4
 - Update config settings.
 
-* Tue Apr 21 2020 Paul Monson <paulmon@microsoft.com> 1.1.1g-3
+* Tue Apr 21 2020 Paul Monson <paulmon@microsoft.com> - 1.1.1g-3
 - Update to OpenSSL 1.1.1g.
 - Accidently skipped releases 1 and 2.
 
-* Mon Apr 06 2020 Andrew Phelps <anphel@microsoft.com> 1.1.1d-3
+* Mon Apr 06 2020 Andrew Phelps <anphel@microsoft.com> - 1.1.1d-3
 - Fix Source0 URL
 
-* Sun Apr 05 2020 Paul Monson <paulmon@microsoft.com> 1.1.1d-2
+* Sun Apr 05 2020 Paul Monson <paulmon@microsoft.com> - 1.1.1d-2
 - Removing ca-certificates to break a circular dependency
 
-* Tue Mar 03 2020 Paul Monson <paulmon@microsoft.com> 1.1.1d-1
+* Tue Mar 03 2020 Paul Monson <paulmon@microsoft.com> - 1.1.1d-1
 - Initial CBL-Mariner import from Fedora 27 (license: MIT).
 - License verified.
 
-* Thu Oct  3 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1d-2
+* Thu Oct  3 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1d-2
 - re-enable the stitched AES-CBC-SHA implementations
 - make AES-GCM work in FIPS mode again
 - enable TLS-1.2 AES-CCM ciphers in FIPS mode
 - fix openssl speed errors in FIPS mode
 
-* Fri Sep 13 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1d-1
+* Fri Sep 13 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1d-1
 - update to the 1.1.1d release
 
-* Fri Sep  6 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1c-6
+* Fri Sep  6 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1c-6
 - upstream fix for status request extension non-compliance (#1737471)
 
 * Thu Jul 25 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.1.1c-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
-* Mon Jun 24 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1c-4
+* Mon Jun 24 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1c-4
 - do not try to use EC groups disallowed in FIPS mode
   in TLS
 - fix Valgrind regression with constant-time code
 
-* Mon Jun  3 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1c-3
+* Mon Jun  3 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1c-3
 - add upstream patch to defer sending KeyUpdate after
   pending writes are complete
 
-* Thu May 30 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1c-2
+* Thu May 30 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1c-2
 - fix use of uninitialized memory
 
-* Wed May 29 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1c-1
+* Wed May 29 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1c-1
 - update to the 1.1.1c release
 
-* Fri May 10 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1b-10
+* Fri May 10 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1b-10
 - Another attempt at the AES-CCM regression fix
 
-* Fri May 10 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1b-9
+* Fri May 10 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1b-9
 - Fix two small regressions
 - Change the ts application default hash to SHA256
 
-* Tue May  7 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1b-8
+* Tue May  7 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1b-8
 - FIPS compliance fixes
 
-* Mon May  6 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1b-7
+* Mon May  6 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1b-7
 - add S390x chacha20-poly1305 assembler support from master branch
 
-* Fri May  3 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1b-6
+* Fri May  3 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1b-6
 - apply new bugfixes from upstream 1.1.1 branch
 
-* Tue Apr 16 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1b-5
+* Tue Apr 16 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1b-5
 - fix for BIO_get_mem_ptr() regression in 1.1.1b (#1691853)
 
-* Wed Mar 27 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1b-4
+* Wed Mar 27 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1b-4
 - drop unused BuildRequires and Requires in the -devel subpackage
 
-* Fri Mar 15 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1b-3
+* Fri Mar 15 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1b-3
 - fix regression in EVP_PBE_scrypt() (#1688284)
 - fix incorrect help message in ca app (#1553206)
 
-* Fri Mar  1 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1b-2
+* Fri Mar  1 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1b-2
 - use .include = syntax in the config file to allow it
   to be parsed by 1.0.2 version (#1668916)
 
-* Thu Feb 28 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1b-1
+* Thu Feb 28 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1b-1
 - update to the 1.1.1b release
 - EVP_KDF API backport from master
 - SSH KDF implementation for EVP_KDF API backport from master
@@ -450,95 +456,95 @@ rm -rf %{buildroot}
 * Fri Feb 01 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.1.1a-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
-* Tue Jan 15 2019 Tomáš Mráz <tmraz@redhat.com> 1.1.1a-1
+* Tue Jan 15 2019 Tomáš Mráz <tmraz@redhat.com> - 1.1.1a-1
 - update to the 1.1.1a release
 
-* Fri Nov  9 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-7
+* Fri Nov  9 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-7
 - use /dev/urandom for seeding the RNG in FIPS POST
 
-* Fri Oct 12 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-6
+* Fri Oct 12 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-6
 - fix SECLEVEL 3 support
 - fix some issues found in Coverity scan
 
 * Thu Sep 27 2018 Charalampos Stratakis <cstratak@redhat.com> - 1:1.1.1-5
 - Correctly invoke sed for defining OPENSSL_NO_SSL3
 
-* Thu Sep 27 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-4
+* Thu Sep 27 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-4
 - define OPENSSL_NO_SSL3 so the newly built dependencies do not
   have access to SSL3 API calls anymore
 
-* Mon Sep 17 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-3
+* Mon Sep 17 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-3
 - reinstate accidentally dropped patch for weak ciphersuites
 
-* Fri Sep 14 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-2
+* Fri Sep 14 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-2
 - for consistent support of security policies we build
   RC4 support in TLS (not default) and allow SHA1 in SECLEVEL 2
 
-* Thu Sep 13 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-1
+* Thu Sep 13 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-1
 - update to the final 1.1.1 version
 
-* Thu Sep  6 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-0.pre9.3
+* Thu Sep  6 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-0.pre9.3
 - do not try to initialize RNG in cleanup if it was not initialized
   before (#1624554)
 - use only /dev/urandom if getrandom() is not available
 - disable SM4
 
-* Wed Aug 29 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-0.pre9.2
+* Wed Aug 29 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-0.pre9.2
 - fix dangling symlinks to manual pages
 - make SSLv3_method work
 
-* Wed Aug 22 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-0.pre9.1
+* Wed Aug 22 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-0.pre9.1
 - update to the latest 1.1.1 beta version
 
-* Mon Aug 13 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-0.pre8.4
+* Mon Aug 13 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-0.pre8.4
 - bidirectional shutdown fixes from upstream
 
-* Mon Aug 13 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-0.pre8.3
+* Mon Aug 13 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-0.pre8.3
 - do not put error on stack when using fixed protocol version
   with the default config (#1615098)
 
-* Fri Jul 27 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-0.pre8.2
+* Fri Jul 27 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-0.pre8.2
 - load crypto policy config file from the default config
 
-* Wed Jul 25 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.1-0.pre8
+* Wed Jul 25 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.1-0.pre8
 - update to the latest 1.1.1 beta version
 
 * Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.1.0h-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
-* Tue Jun 19 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.0h-5
+* Tue Jun 19 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.0h-5
 - fix FIPS RSA key generation failure
 
-* Mon Jun  4 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.0h-4
+* Mon Jun  4 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.0h-4
 - ppc64le is not multilib arch (#1584994)
 
-* Tue Apr  3 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.0h-3
+* Tue Apr  3 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.0h-3
 - fix regression of c_rehash (#1562953)
 
-* Thu Mar 29 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.0h-2
+* Thu Mar 29 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.0h-2
 - fix FIPS symbol versions
 
-* Thu Mar 29 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.0h-1
+* Thu Mar 29 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.0h-1
 - update to upstream version 1.1.0h
 - add Recommends for openssl-pkcs11
 
-* Fri Feb 23 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.0g-6
+* Fri Feb 23 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.0g-6
 - one more try to apply RPM_LD_FLAGS properly (#1541033)
 - dropped unneeded starttls xmpp patch (#1417017)
 
 * Thu Feb 08 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.1.0g-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
-* Thu Feb  1 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.0g-4
+* Thu Feb  1 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.0g-4
 - apply RPM_LD_FLAGS properly (#1541033)
 
-* Thu Jan 11 2018 Tomáš Mráz <tmraz@redhat.com> 1.1.0g-3
+* Thu Jan 11 2018 Tomáš Mráz <tmraz@redhat.com> - 1.1.0g-3
 - silence the .rnd write failure as that is auxiliary functionality (#1524833)
 
-* Thu Dec 14 2017 Tomáš Mráz <tmraz@redhat.com> 1.1.0g-2
+* Thu Dec 14 2017 Tomáš Mráz <tmraz@redhat.com> - 1.1.0g-2
 - put the Makefile.certificate in pkgdocdir and drop the requirement on make
 
-* Fri Nov  3 2017 Tomáš Mráz <tmraz@redhat.com> 1.1.0g-1
+* Fri Nov  3 2017 Tomáš Mráz <tmraz@redhat.com> - 1.1.0g-1
 - update to upstream version 1.1.0g
 
 * Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.1.0f-9
@@ -547,231 +553,231 @@ rm -rf %{buildroot}
 * Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.1.0f-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
-* Mon Jul 17 2017 Tomáš Mráz <tmraz@redhat.com> 1:1.1.0f-7
+* Mon Jul 17 2017 Tomáš Mráz <tmraz@redhat.com> - 1:1.1.0f-7
 - make s_client and s_server work with -ssl3 option (#1471783)
 
 * Thu Jul 13 2017 Petr Pisar <ppisar@redhat.com> - 1:1.1.0f-6
 - perl dependency renamed to perl-interpreter
   <https://fedoraproject.org/wiki/Changes/perl_Package_to_Install_Core_Modules>
 
-* Mon Jun 26 2017 Tomáš Mráz <tmraz@redhat.com> 1.1.0f-5
+* Mon Jun 26 2017 Tomáš Mráz <tmraz@redhat.com> - 1.1.0f-5
 - disable verification of all insecure hashes
 
-* Fri Jun 23 2017 Tomáš Mráz <tmraz@redhat.com> 1.1.0f-4
+* Fri Jun 23 2017 Tomáš Mráz <tmraz@redhat.com> - 1.1.0f-4
 - make DTLS work (#1462541)
 
-* Thu Jun 15 2017 Tomáš Mráz <tmraz@redhat.com> 1.1.0f-3
+* Thu Jun 15 2017 Tomáš Mráz <tmraz@redhat.com> - 1.1.0f-3
 - enable 3DES SSL ciphersuites, RC4 is kept disabled (#1453066)
 
-* Mon Jun  5 2017 Tomáš Mráz <tmraz@redhat.com> 1.1.0f-2
+* Mon Jun  5 2017 Tomáš Mráz <tmraz@redhat.com> - 1.1.0f-2
 - only release thread-local key if we created it (from upstream) (#1458775)
 
-* Fri Jun  2 2017 Tomáš Mráz <tmraz@redhat.com> 1.1.0f-1
+* Fri Jun  2 2017 Tomáš Mráz <tmraz@redhat.com> - 1.1.0f-1
 - update to upstream version 1.1.0f
 - SRP and GOST is now allowed, note that GOST support requires
   adding GOST engine which is not part of openssl anymore
 
-* Thu Feb 16 2017 Tomáš Mráz <tmraz@redhat.com> 1.1.0e-1
+* Thu Feb 16 2017 Tomáš Mráz <tmraz@redhat.com> - 1.1.0e-1
 - update to upstream version 1.1.0e
 - add documentation of the PROFILE=SYSTEM special cipher string (#1420232)
 
 * Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.1.0d-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
-* Wed Feb  1 2017 Tomáš Mráz <tmraz@redhat.com> 1.1.0d-2
+* Wed Feb  1 2017 Tomáš Mráz <tmraz@redhat.com> - 1.1.0d-2
 - applied upstream fixes (fix regression in X509_CRL_digest)
 
-* Thu Jan 26 2017 Tomáš Mráz <tmraz@redhat.com> 1.1.0d-1
+* Thu Jan 26 2017 Tomáš Mráz <tmraz@redhat.com> - 1.1.0d-1
 - update to upstream version 1.1.0d
 
-* Thu Dec 22 2016 Tomáš Mráz <tmraz@redhat.com> 1.1.0c-5
+* Thu Dec 22 2016 Tomáš Mráz <tmraz@redhat.com> - 1.1.0c-5
 - preserve new line in fd BIO BIO_gets() as other BIOs do
 
-* Fri Dec  2 2016 Tomáš Mráz <tmraz@redhat.com> 1.1.0c-4
+* Fri Dec  2 2016 Tomáš Mráz <tmraz@redhat.com> - 1.1.0c-4
 - FIPS mode fixes for TLS
 
-* Wed Nov 30 2016 Tomáš Mráz <tmraz@redhat.com> 1.1.0c-3
+* Wed Nov 30 2016 Tomáš Mráz <tmraz@redhat.com> - 1.1.0c-3
 - revert SSL_read() behavior change - patch from upstream (#1394677)
 - fix behavior on client certificate request in renegotiation (#1393579)
 
-* Tue Nov 22 2016 Tomáš Mráz <tmraz@redhat.com> 1.1.0c-2
+* Tue Nov 22 2016 Tomáš Mráz <tmraz@redhat.com> - 1.1.0c-2
 - EC curve NIST P-224 is now allowed, still kept disabled in TLS due
   to less than optimal security
 
-* Fri Nov 11 2016 Tomáš Mráz <tmraz@redhat.com> 1.1.0c-1
+* Fri Nov 11 2016 Tomáš Mráz <tmraz@redhat.com> - 1.1.0c-1
 - update to upstream version 1.1.0c
 
-* Fri Nov  4 2016 Tomáš Mráz <tmraz@redhat.com> 1.1.0b-4
+* Fri Nov  4 2016 Tomáš Mráz <tmraz@redhat.com> - 1.1.0b-4
 - use a random seed if the supplied one did not generate valid
   parameters in dsa_builtin_paramgen2()
 
-* Wed Oct 12 2016 Tomáš Mráz <tmraz@redhat.com> 1.1.0b-3
+* Wed Oct 12 2016 Tomáš Mráz <tmraz@redhat.com> - 1.1.0b-3
 - do not break contract on return value when using dsa_builtin_paramgen2()
 
-* Wed Oct 12 2016 Tomáš Mráz <tmraz@redhat.com> 1.1.0b-2
+* Wed Oct 12 2016 Tomáš Mráz <tmraz@redhat.com> - 1.1.0b-2
 - fix afalg failure on big endian
 
-* Tue Oct 11 2016 Tomáš Mráz <tmraz@redhat.com> 1.1.0b-1
+* Tue Oct 11 2016 Tomáš Mráz <tmraz@redhat.com> - 1.1.0b-1
 - update to upstream version 1.1.0b
 
 * Fri Oct 07 2016 Richard W.M. Jones <rjones@redhat.com> - 1:1.0.2j-2
 - Add flags for riscv64.
 
-* Mon Sep 26 2016 Tomáš Mráz <tmraz@redhat.com> 1.0.2j-1
+* Mon Sep 26 2016 Tomáš Mráz <tmraz@redhat.com> - 1.0.2j-1
 - minor upstream release 1.0.2j fixing regression from previous release
 
-* Sat Sep 24 2016 David Woodhouse <dwmw2@infradead.org> 1.0.2i-2
+* Sat Sep 24 2016 David Woodhouse <dwmw2@infradead.org> - 1.0.2i-2
 - Fix enginesdir in libcrypto.c (#1375361)
 
-* Thu Sep 22 2016 Tomáš Mráz <tmraz@redhat.com> 1.0.2i-1
+* Thu Sep 22 2016 Tomáš Mráz <tmraz@redhat.com> - 1.0.2i-1
 - minor upstream release 1.0.2i fixing security issues
 - move man pages for perl based scripts to perl subpackage (#1377617)
 
-* Wed Aug 10 2016 Tomáš Mráz <tmraz@redhat.com> 1.0.2h-3
+* Wed Aug 10 2016 Tomáš Mráz <tmraz@redhat.com> - 1.0.2h-3
 - fix regression in Cisco AnyConnect VPN support (#1354588)
 
-* Mon Jun 27 2016 Tomáš Mráz <tmraz@redhat.com> 1.0.2h-2
+* Mon Jun 27 2016 Tomáš Mráz <tmraz@redhat.com> - 1.0.2h-2
 - require libcrypto in libssl.pc (#1301301)
 
-* Tue May  3 2016 Tomáš Mráz <tmraz@redhat.com> 1.0.2h-1
+* Tue May  3 2016 Tomáš Mráz <tmraz@redhat.com> - 1.0.2h-1
 - minor upstream release 1.0.2h fixing security issues
 
-* Tue Mar 29 2016 Tomáš Mráz <tmraz@redhat.com> 1.0.2g-4
+* Tue Mar 29 2016 Tomáš Mráz <tmraz@redhat.com> - 1.0.2g-4
 - disable SSLv2 support altogether (without ABI break)
 
 * Mon Mar  7 2016 Tom Callaway <spot@fedoraproject.org> - 1.0.2g-3
 - enable RC5
 
-* Wed Mar  2 2016 Tomáš Mráz <tmraz@redhat.com> 1.0.2g-2
+* Wed Mar  2 2016 Tomáš Mráz <tmraz@redhat.com> - 1.0.2g-2
 - reenable SSL2 in the build to avoid ABI break (it does not
   make the openssl vulnerable to DROWN attack)
 
-* Tue Mar  1 2016 Tomáš Mráz <tmraz@redhat.com> 1.0.2g-1
+* Tue Mar  1 2016 Tomáš Mráz <tmraz@redhat.com> - 1.0.2g-1
 - minor upstream release 1.0.2g fixing security issues
 
 * Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.0.2f-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
-* Thu Jan 28 2016 Tomáš Mráz <tmraz@redhat.com> 1.0.2f-1
+* Thu Jan 28 2016 Tomáš Mráz <tmraz@redhat.com> - 1.0.2f-1
 - minor upstream release 1.0.2f fixing security issues
 - add support for MIPS secondary architecture
 
-* Fri Jan 15 2016 Tomáš Mráz <tmraz@redhat.com> 1.0.2e-5
+* Fri Jan 15 2016 Tomáš Mráz <tmraz@redhat.com> - 1.0.2e-5
 - document some options of openssl speed command
 
-* Fri Dec 18 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2e-4
+* Fri Dec 18 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2e-4
 - enable sctp support in DTLS
 
-* Tue Dec  8 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2e-3
+* Tue Dec  8 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2e-3
 - remove unimplemented EC method from header (#1289599)
 
-* Mon Dec  7 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2e-2
+* Mon Dec  7 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2e-2
 - the fast nistp implementation works only on little endian architectures
 
-* Fri Dec  4 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2e-1
+* Fri Dec  4 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2e-1
 - minor upstream release 1.0.2e fixing moderate severity security issues
 - enable fast assembler implementation for NIST P-256 and P-521
   elliptic curves (#1164210)
 - filter out unwanted link options from the .pc files (#1257836)
 - do not set serial to 0 in Makefile.certificate (#1135719)
 
-* Mon Nov 16 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2d-3
+* Mon Nov 16 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2d-3
 - fix sigill on some AMD CPUs (#1278194)
 
-* Wed Aug 12 2015 Tom Callaway <spot@fedoraproject.org> 1.0.2d-2
+* Wed Aug 12 2015 Tom Callaway <spot@fedoraproject.org> - 1.0.2d-2
 - re-enable secp256k1 (bz1021898)
 
-* Thu Jul  9 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2d-1
+* Thu Jul  9 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2d-1
 - minor upstream release 1.0.2d fixing a high severity security issue
 
-* Tue Jul  7 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2c-3
+* Tue Jul  7 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2c-3
 - fix the aarch64 build
 
 * Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.0.2c-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
-* Mon Jun 15 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2c-1
+* Mon Jun 15 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2c-1
 - minor upstream release 1.0.2c fixing multiple security issues
 
-* Thu May  7 2015 Peter Robinson <pbrobinson@fedoraproject.org> 1.0.2a-4
+* Thu May  7 2015 Peter Robinson <pbrobinson@fedoraproject.org> - 1.0.2a-4
 - Add aarch64 sslarch details
 
-* Thu May  7 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2a-3
+* Thu May  7 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2a-3
 - fix some 64 bit build targets
 
-* Tue Apr 28 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2a-2
+* Tue Apr 28 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2a-2
 - add alternative certificate chain discovery support from upstream
 
-* Thu Apr 23 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2a-1
+* Thu Apr 23 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.2a-1
 - rebase to 1.0.2 branch
 
-* Thu Apr  9 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-7
+* Thu Apr  9 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.1k-7
 - drop the AES-GCM restriction of 2^32 operations because the IV is
   always 96 bits (32 bit fixed field + 64 bit invocation field)
 
-* Thu Mar 19 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-6
+* Thu Mar 19 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.1k-6
 - fix CVE-2015-0209 - potential use after free in d2i_ECPrivateKey()
 - fix CVE-2015-0286 - improper handling of ASN.1 boolean comparison
 - fix CVE-2015-0287 - ASN.1 structure reuse decoding memory corruption
 - fix CVE-2015-0289 - NULL dereference decoding invalid PKCS#7 data
 - fix CVE-2015-0293 - triggerable assert in SSLv2 server
 
-* Mon Mar 16 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-5
+* Mon Mar 16 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.1k-5
 - fix bug in the CRYPTO_128_unwrap()
 
-* Fri Feb 27 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-4
+* Fri Feb 27 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.1k-4
 - fix bug in the RFC 5649 support (#1185878)
 
 * Sat Feb 21 2015 Till Maas <opensource@till.name> - 1:1.0.1k-3
 - Rebuilt for Fedora 23 Change
   https://fedoraproject.org/wiki/Changes/Harden_all_packages_with_position-independent_code
 
-* Thu Jan 15 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-2
+* Thu Jan 15 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.1k-2
 - test in the non-FIPS RSA keygen for minimal distance of p and q
   similarly to the FIPS RSA keygen
 
-* Fri Jan  9 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-1
+* Fri Jan  9 2015 Tomáš Mráz <tmraz@redhat.com> - 1.0.1k-1
 - new upstream release fixing multiple security issues
 
-* Thu Nov 20 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-3
+* Thu Nov 20 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1j-3
 - disable SSLv3 by default again (mail servers and possibly
   LDAP servers should probably allow it explicitly for legacy
   clients)
 
-* Tue Oct 21 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-2
+* Tue Oct 21 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1j-2
 - update the FIPS RSA keygen to be FIPS 186-4 compliant
 
-* Thu Oct 16 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-1
+* Thu Oct 16 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1j-1
 - new upstream release fixing multiple security issues
 
-* Fri Oct 10 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-5
+* Fri Oct 10 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1i-5
 - copy negotiated digests when switching certs by SNI (#1150032)
 
-* Mon Sep  8 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-4
+* Mon Sep  8 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1i-4
 - add support for RFC 5649
 
 * Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.0.1i-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
-* Wed Aug 13 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-2
+* Wed Aug 13 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1i-2
 - drop RSA X9.31 from RSA FIPS selftests
 - add Power 8 optimalizations
 
-* Thu Aug  7 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-1
+* Thu Aug  7 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1i-1
 - new upstream release fixing multiple moderate security issues
 - for now disable only SSLv2 by default
 
-* Fri Jul 18 2014 Tom Callaway <spot@fedoraproject.org> 1.0.1h-6
+* Fri Jul 18 2014 Tom Callaway <spot@fedoraproject.org> - 1.0.1h-6
 - fix license handling
 
-* Mon Jun 30 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-5
+* Mon Jun 30 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1h-5
 - disable SSLv2 and SSLv3 protocols by default (can be enabled
   via appropriate SSL_CTX_clear_options() call)
 
-* Wed Jun 11 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-4
+* Wed Jun 11 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1h-4
 - use system profile for default cipher list
 
-* Tue Jun 10 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-3
+* Tue Jun 10 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1h-3
 - make FIPS mode keygen bit length restriction enforced only when
   OPENSSL_ENFORCE_MODULUS_BITS is set
 - fix CVE-2014-0224 fix that broke EAP-FAST session resumption support
@@ -779,14 +785,14 @@ rm -rf %{buildroot}
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.0.1h-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
-* Thu Jun  5 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-1
+* Thu Jun  5 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1h-1
 - new upstream release 1.0.1h
 
-* Sat May 31 2014 Peter Robinson <pbrobinson@fedoraproject.org> 1.0.1g-2
+* Sat May 31 2014 Peter Robinson <pbrobinson@fedoraproject.org> - 1.0.1g-2
 - Drop obsolete and irrelevant docs
 - Move devel docs to appropriate package
 
-* Wed May  7 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1g-1
+* Wed May  7 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1g-1
 - new upstream release 1.0.1g
 - do not include ECC ciphersuites in SSLv2 client hello (#1090952)
 - fail on hmac integrity check if the .hmac file is empty
@@ -795,108 +801,108 @@ rm -rf %{buildroot}
 - pull in upstream patch for CVE-2014-0160
 - removed CHANGES file portion from patch for expediency
 
-* Thu Apr  3 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-43
+* Thu Apr  3 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-43
 - add support for ppc64le architecture (#1072633)
 
-* Mon Mar 17 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-42
+* Mon Mar 17 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-42
 - properly detect encryption failure in BIO
 - use 2048 bit RSA key in FIPS selftests
 
-* Fri Feb 14 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-41
+* Fri Feb 14 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-41
 - use the key length from configuration file if req -newkey rsa is invoked
 
-* Thu Feb 13 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-40
+* Thu Feb 13 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-40
 - print ephemeral key size negotiated in TLS handshake (#1057715)
 - add DH_compute_key_padded needed for FIPS CAVS testing
 
-* Thu Feb  6 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-39
+* Thu Feb  6 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-39
 - make expiration and key length changeable by DAYS and KEYLEN
   variables in the certificate Makefile (#1058108)
 - change default hash to sha256 (#1062325)
 
-* Wed Jan 22 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-38
+* Wed Jan 22 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-38
 - make 3des strength to be 128 bits instead of 168 (#1056616)
 
-* Tue Jan  7 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-37
+* Tue Jan  7 2014 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-37
 - fix CVE-2013-4353 - Invalid TLS handshake crash
 - fix CVE-2013-6450 - possible MiTM attack on DTLS1
 
-* Fri Dec 20 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-36
+* Fri Dec 20 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-36
 - fix CVE-2013-6449 - crash when version in SSL structure is incorrect
 - more FIPS validation requirement changes
 
-* Wed Dec 18 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-35
+* Wed Dec 18 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-35
 - drop weak ciphers from the default TLS ciphersuite list
 - add back some symbols that were dropped with update to 1.0.1 branch
 - more FIPS validation requirement changes
 
-* Tue Nov 19 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-34
+* Tue Nov 19 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-34
 - fix locking and reseeding problems with FIPS drbg
 
-* Fri Nov 15 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-33
+* Fri Nov 15 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-33
 - additional changes required for FIPS validation
 
-* Wed Nov 13 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-32
+* Wed Nov 13 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-32
 - disable verification of certificate, CRL, and OCSP signatures
   using MD5 if OPENSSL_ENABLE_MD5_VERIFY environment variable
   is not set
 
-* Fri Nov  8 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-31
+* Fri Nov  8 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-31
 - add back support for secp521r1 EC curve
 - add aarch64 to Configure (#969692)
 
-* Tue Oct 29 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-30
+* Tue Oct 29 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-30
 - fix misdetection of RDRAND support on Cyrix CPUS (from upstream) (#1022346)
 
-* Thu Oct 24 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-29
+* Thu Oct 24 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-29
 - do not advertise ECC curves we do not support (#1022493)
 
-* Wed Oct 16 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-28
+* Wed Oct 16 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-28
 - only ECC NIST Suite B curves support
 - drop -fips subpackage
 
 * Mon Oct 14 2013 Tom Callaway <spot@fedoraproject.org> - 1.0.1e-27
 - resolve bugzilla 319901 (phew! only took 6 years & 9 days)
 
-* Fri Sep 27 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-26
+* Fri Sep 27 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-26
 - make DTLS1 work in FIPS mode
 - avoid RSA and DSA 512 bits and Whirlpool in 'openssl speed' in FIPS mode
 
-* Mon Sep 23 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-25
+* Mon Sep 23 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-25
 - avoid dlopening libssl.so from libcrypto (#1010357)
 
-* Fri Sep 20 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-24
+* Fri Sep 20 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-24
 - fix small memory leak in FIPS aes selftest
 
-* Thu Sep 19 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-23
+* Thu Sep 19 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-23
 - fix segfault in openssl speed hmac in the FIPS mode
 
-* Thu Sep 12 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-22
+* Thu Sep 12 2013 Tomáš Mráz <tmraz@redhat.com> - 1.0.1e-22
 - document the nextprotoneg option in manual pages
   original patch by Hubert Kario
 
-* Tue Sep 10 2013 Kyle McMartin <kyle@redhat.com> 1.0.1e-21
+* Tue Sep 10 2013 Kyle McMartin <kyle@redhat.com> - 1.0.1e-21
 - [arm] use elf auxv to figure out armcap.c instead of playing silly
   games with SIGILL handlers. (#1006474)
 
-* Wed Sep  4 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-20
+* Wed Sep  4 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-20
 - try to avoid some races when updating the -fips subpackage
 
-* Mon Sep  2 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-19
+* Mon Sep  2 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-19
 - use version-release in .hmac suffix to avoid overwrite
   during upgrade
 
-* Thu Aug 29 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-18
+* Thu Aug 29 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-18
 - allow deinitialization of the FIPS mode
 
-* Thu Aug 29 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-17
+* Thu Aug 29 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-17
 - always perform the FIPS selftests in library constructor
   if FIPS module is installed
 
-* Tue Aug 27 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-16
+* Tue Aug 27 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-16
 - add -fips subpackage that contains the FIPS module files
 
-* Fri Aug 16 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-15
+* Fri Aug 16 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-15
 - fix use of rdrand if available
 - more commits cherry picked from upstream
 - documentation fixes
@@ -904,67 +910,67 @@ rm -rf %{buildroot}
 * Sat Aug 03 2013 Petr Pisar <ppisar@redhat.com> - 1:1.0.1e-14
 - Perl 5.18 rebuild
 
-* Fri Jul 26 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-13
+* Fri Jul 26 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-13
 - additional manual page fix
 - use symbol versioning also for the textual version
 
-* Thu Jul 25 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-12
+* Thu Jul 25 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-12
 - additional manual page fixes
 
-* Fri Jul 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-11
+* Fri Jul 19 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-11
 - use _prefix macro
 
 * Wed Jul 17 2013 Petr Pisar <ppisar@redhat.com> - 1:1.0.1e-10
 - Perl 5.18 rebuild
 
-* Thu Jul 11 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-9
+* Thu Jul 11 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-9
 - add openssl.cnf.5 manpage symlink to config.5
 
-* Wed Jul 10 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-8
+* Wed Jul 10 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-8
 - add relro linking flag
 
-* Wed Jul 10 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-7
+* Wed Jul 10 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-7
 - add support for the -trusted_first option for certificate chain verification
 
-* Fri May  3 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-6
+* Fri May  3 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-6
 - fix build of manual pages with current pod2man (#959439)
 
-* Sun Apr 21 2013 Peter Robinson <pbrobinson@fedoraproject.org> 1.0.1e-5
+* Sun Apr 21 2013 Peter Robinson <pbrobinson@fedoraproject.org> - 1.0.1e-5
 - Enable ARM optimised build
 
-* Mon Mar 18 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-4
+* Mon Mar 18 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-4
 - fix random bad record mac errors (#918981)
 
-* Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-3
+* Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-3
 - fix up the SHLIB_VERSION_NUMBER
 
-* Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-2
+* Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-2
 - disable ZLIB loading by default (due to CRIME attack)
 
-* Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-1
+* Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1e-1
 - new upstream version
 
-* Wed Jan 30 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1c-12
+* Wed Jan 30 2013 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-12
 - more fixes from upstream
 - fix errors in manual causing build failure (#904777)
 
-* Fri Dec 21 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-11
+* Fri Dec 21 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-11
 - add script for renewal of a self-signed cert by Philip Prindeville (#871566)
 - allow X509_issuer_and_serial_hash() produce correct result in
   the FIPS mode (#881336)
 
-* Thu Dec  6 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-10
+* Thu Dec  6 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-10
 - do not load default verify paths if CApath or CAfile specified (#884305)
 
-* Tue Nov 20 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-9
+* Tue Nov 20 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-9
 - more fixes from upstream CVS
 - fix DSA key pairwise check (#878597)
 
-* Thu Nov 15 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-8
+* Thu Nov 15 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-8
 - use 1024 bit DH parameters in s_server as 512 bit is not allowed
   in FIPS mode and it is quite weak anyway
 
-* Mon Sep 10 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-7
+* Mon Sep 10 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-7
 - add missing initialization of str in aes_ccm_init_key (#853963)
 - add important patches from upstream CVS
 - use the secure_getenv() with new glibc
@@ -972,46 +978,46 @@ rm -rf %{buildroot}
 * Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.0.1c-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
-* Fri Jul 13 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-5
+* Fri Jul 13 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-5
 - use __getenv_secure() instead of __libc_enable_secure
 
-* Fri Jul 13 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-4
+* Fri Jul 13 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-4
 - do not move libcrypto to /lib
 - do not use environment variables if __libc_enable_secure is on
 - fix strict aliasing problems in modes
 
-* Thu Jul 12 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-3
+* Thu Jul 12 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-3
 - fix DSA key generation in FIPS mode (#833866)
 - allow duplicate FIPS_mode_set(1)
 - enable build on ppc64 subarch (#834652)
 
-* Wed Jul 11 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-2
+* Wed Jul 11 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-2
 - fix s_server with new glibc when no global IPv6 address (#839031)
 - make it build with new Perl
 
-* Tue May 15 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-1
+* Tue May 15 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1c-1
 - new upstream version
 
-* Thu Apr 26 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1b-1
+* Thu Apr 26 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1b-1
 - new upstream version
 
-* Fri Apr 20 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1a-1
+* Fri Apr 20 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1a-1
 - new upstream version fixing CVE-2012-2110
 
-* Wed Apr 11 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-3
+* Wed Apr 11 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1-3
 - add Kerberos 5 libraries to pkgconfig for static linking (#807050)
 
-* Thu Apr  5 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-2
+* Thu Apr  5 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1-2
 - backports from upstream CVS
 - fix segfault when /dev/urandom is not available (#809586)
 
-* Wed Mar 14 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-1
+* Wed Mar 14 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1-1
 - new upstream release
 
-* Mon Mar  5 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-0.3.beta3
+* Mon Mar  5 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1-0.3.beta3
 - add obsoletes to assist multilib updates (#799636)
 
-* Wed Feb 29 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-0.2.beta3
+* Wed Feb 29 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1-0.2.beta3
 - epoch bumped to 1 due to revert to 1.0.0g on Fedora 17
 - new upstream release from the 1.0.1 branch
 - fix s390x build (#798411)
@@ -1021,64 +1027,64 @@ rm -rf %{buildroot}
 - split the libraries to a separate -libs package
 - add make to requires on the base package (#783446)
 
-* Tue Feb  7 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-0.1.beta2
+* Tue Feb  7 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.1-0.1.beta2
 - new upstream release from the 1.0.1 branch, ABI compatible
 - add documentation for the -no_ign_eof option
 
-* Thu Jan 19 2012 Tomas Mraz <tmraz@redhat.com> 1.0.0g-1
+* Thu Jan 19 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.0g-1
 - new upstream release fixing CVE-2012-0050 - DoS regression in
   DTLS support introduced by the previous release (#782795)
 
-* Thu Jan  5 2012 Tomas Mraz <tmraz@redhat.com> 1.0.0f-1
+* Thu Jan  5 2012 Tomas Mraz <tmraz@redhat.com> - 1.0.0f-1
 - new upstream release fixing multiple CVEs
 
-* Tue Nov 22 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0e-4
+* Tue Nov 22 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0e-4
 - move the libraries needed for static linking to Libs.private
 
-* Thu Nov  3 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0e-3
+* Thu Nov  3 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0e-3
 - do not use AVX instructions when osxsave bit not set
 - add direct known answer tests for SHA2 algorithms
 
-* Wed Sep 21 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0e-2
+* Wed Sep 21 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0e-2
 - fix missing initialization of variable in CHIL engine
 
-* Wed Sep  7 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0e-1
+* Wed Sep  7 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0e-1
 - new upstream release fixing CVE-2011-3207 (#736088)
 
-* Wed Aug 24 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-8
+* Wed Aug 24 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0d-8
 - drop the separate engine for Intel acceleration improvements
   and merge in the AES-NI, SHA1, and RC4 optimizations
 - add support for OPENSSL_DISABLE_AES_NI environment variable
   that disables the AES-NI support
 
-* Tue Jul 26 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-7
+* Tue Jul 26 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0d-7
 - correct openssl cms help output (#636266)
 - more tolerant starttls detection in XMPP protocol (#608239)
 
-* Wed Jul 20 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-6
+* Wed Jul 20 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0d-6
 - add support for newest Intel acceleration improvements backported
   from upstream by Intel in form of a separate engine
 
-* Thu Jun  9 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-5
+* Thu Jun  9 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0d-5
 - allow the AES-NI engine in the FIPS mode
 
-* Tue May 24 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-4
+* Tue May 24 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0d-4
 - add API necessary for CAVS testing of the new DSA parameter generation
 
-* Thu Apr 28 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-3
+* Thu Apr 28 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0d-3
 - add support for VIA Padlock on 64bit arch from upstream (#617539)
 - do not return bogus values from load_certs (#652286)
 
-* Tue Apr  5 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-2
+* Tue Apr  5 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0d-2
 - clarify apps help texts for available digest algorithms (#693858)
 
-* Thu Feb 10 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-1
+* Thu Feb 10 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0d-1
 - new upstream release fixing CVE-2011-0014 (OCSP stapling vulnerability)
 
 * Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.0c-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
-* Fri Feb  4 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0c-3
+* Fri Feb  4 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0c-3
 - add -x931 parameter to openssl genrsa command to use the ANSI X9.31
   key generation method
 - use FIPS-186-3 method for DSA parameter generation
@@ -1087,131 +1093,131 @@ rm -rf %{buildroot}
   even if the /proc fips flag is on
 - make openssl pkcs12 command work by default in the FIPS mode
 
-* Mon Jan 24 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0c-2
+* Mon Jan 24 2011 Tomas Mraz <tmraz@redhat.com> - 1.0.0c-2
 - listen on ipv6 wildcard in s_server so we accept connections
   from both ipv4 and ipv6 (#601612)
 - fix openssl speed command so it can be used in the FIPS mode
   with FIPS allowed ciphers
 
-* Fri Dec  3 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0c-1
+* Fri Dec  3 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0c-1
 - new upstream version fixing CVE-2010-4180
 
-* Tue Nov 23 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0b-3
+* Tue Nov 23 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0b-3
 - replace the revert for the s390x bignum asm routines with
   fix from upstream
 
-* Mon Nov 22 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0b-2
+* Mon Nov 22 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0b-2
 - revert upstream change in s390x bignum asm routines
 
-* Tue Nov 16 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0b-1
+* Tue Nov 16 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0b-1
 - new upstream version fixing CVE-2010-3864 (#649304)
 
-* Tue Sep  7 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0a-3
+* Tue Sep  7 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0a-3
 - make SHLIB_VERSION reflect the library suffix
 
-* Wed Jun 30 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0a-2
+* Wed Jun 30 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0a-2
 - openssl man page fix (#609484)
 
-* Fri Jun  4 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0a-1
+* Fri Jun  4 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0a-1
 - new upstream patch release, fixes CVE-2010-0742 (#598738)
   and CVE-2010-1633 (#598732)
 
-* Wed May 19 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-5
+* Wed May 19 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-5
 - pkgconfig files now contain the correct libdir (#593723)
 
-* Tue May 18 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-4
+* Tue May 18 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-4
 - make CA dir readable - the private keys are in private subdir (#584810)
 
-* Fri Apr  9 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-3
+* Fri Apr  9 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-3
 - a few fixes from upstream CVS
 - move libcrypto to /lib (#559953)
 
-* Tue Apr  6 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-2
+* Tue Apr  6 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-2
 - set UTC timezone on pod2man run (#578842)
 - make X509_NAME_hash_old work in FIPS mode
 
-* Tue Mar 30 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-1
+* Tue Mar 30 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-1
 - update to final 1.0.0 upstream release
 
-* Tue Feb 16 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.22.beta5
+* Tue Feb 16 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.22.beta5
 - make TLS work in the FIPS mode
 
-* Fri Feb 12 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.21.beta5
+* Fri Feb 12 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.21.beta5
 - gracefully handle zero length in assembler implementations of
   OPENSSL_cleanse (#564029)
 - do not fail in s_server if client hostname not resolvable (#561260)
 
-* Wed Jan 20 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.20.beta5
+* Wed Jan 20 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.20.beta5
 - new upstream release
 
-* Thu Jan 14 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.19.beta4
+* Thu Jan 14 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.19.beta4
 - fix CVE-2009-4355 - leak in applications incorrectly calling
   CRYPTO_free_all_ex_data() before application exit (#546707)
 - upstream fix for future TLS protocol version handling
 
-* Wed Jan 13 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.18.beta4
+* Wed Jan 13 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.18.beta4
 - add support for Intel AES-NI
 
-* Thu Jan  7 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.17.beta4
+* Thu Jan  7 2010 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.17.beta4
 - upstream fix compression handling on session resumption
 - various null checks and other small fixes from upstream
 - upstream changes for the renegotiation info according to the latest draft
 
-* Mon Nov 23 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.16.beta4
+* Mon Nov 23 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.16.beta4
 - fix non-fips mingw build (patch by Kalev Lember)
 - add IPV6 fix for DTLS
 
-* Fri Nov 20 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.15.beta4
+* Fri Nov 20 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.15.beta4
 - add better error reporting for the unsafe renegotiation
 
-* Fri Nov 20 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.14.beta4
+* Fri Nov 20 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.14.beta4
 - fix build on s390x
 
-* Wed Nov 18 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.13.beta4
+* Wed Nov 18 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.13.beta4
 - disable enforcement of the renegotiation extension on the client (#537962)
 - add fixes from the current upstream snapshot
 
-* Fri Nov 13 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.12.beta4
+* Fri Nov 13 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.12.beta4
 - keep the beta status in version number at 3 so we do not have to rebuild
   openssh and possibly other dependencies with too strict version check
 
-* Thu Nov 12 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.11.beta4
+* Thu Nov 12 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.11.beta4
 - update to new upstream version, no soname bump needed
 - fix CVE-2009-3555 - note that the fix is bypassed if SSL_OP_ALL is used
   so the compatibility with unfixed clients is not broken. The
   protocol extension is also not final.
 
-* Fri Oct 16 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.10.beta3
+* Fri Oct 16 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.10.beta3
 - fix use of freed memory if SSL_CTX_free() is called before
   SSL_free() (#521342)
 
-* Thu Oct  8 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.9.beta3
+* Thu Oct  8 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.9.beta3
 - fix typo in DTLS1 code (#527015)
 - fix leak in error handling of d2i_SSL_SESSION()
 
-* Wed Sep 30 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.8.beta3
+* Wed Sep 30 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.8.beta3
 - fix RSA and DSA FIPS selftests
 - reenable fixed x86_64 camellia assembler code (#521127)
 
-* Fri Sep  4 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.7.beta3
+* Fri Sep  4 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.7.beta3
 - temporarily disable x86_64 camellia assembler code (#521127)
 
-* Mon Aug 31 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.6.beta3
+* Mon Aug 31 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.6.beta3
 - fix openssl dgst -dss1 (#520152)
 
-* Wed Aug 26 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.5.beta3
+* Wed Aug 26 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.5.beta3
 - drop the compat symlink hacks
 
-* Sat Aug 22 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.4.beta3
+* Sat Aug 22 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.4.beta3
 - constify SSL_CIPHER_description()
 
-* Fri Aug 21 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.3.beta3
+* Fri Aug 21 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.3.beta3
 - fix WWW:Curl:Easy reference in tsget
 
-* Fri Aug 21 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.2.beta3
+* Fri Aug 21 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.2.beta3
 - enable MD-2
 
-* Thu Aug 20 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.1.beta3
+* Thu Aug 20 2009 Tomas Mraz <tmraz@redhat.com> - 1.0.0-0.1.beta3
 - update to new major upstream release
 
 * Sat Jul 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.8k-7
@@ -1221,63 +1227,63 @@ rm -rf %{buildroot}
 - do not build special 'optimized' versions for i686, as that's the base
   arch in Fedora now
 
-* Tue Jun 30 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-6
+* Tue Jun 30 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8k-6
 - abort if selftests failed and random number generator is polled
 - mention EVP_aes and EVP_sha2xx routines in the manpages
 - add README.FIPS
 - make CA dir absolute path (#445344)
 - change default length for RSA key generation to 2048 (#484101)
 
-* Thu May 21 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-5
+* Thu May 21 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8k-5
 - fix CVE-2009-1377 CVE-2009-1378 CVE-2009-1379
   (DTLS DoS problems) (#501253, #501254, #501572)
 
-* Tue Apr 21 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-4
+* Tue Apr 21 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8k-4
 - support compatibility DTLS mode for CISCO AnyConnect (#464629)
 
-* Fri Apr 17 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-3
+* Fri Apr 17 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8k-3
 - correct the SHLIB_VERSION define
 
-* Wed Apr 15 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-2
+* Wed Apr 15 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8k-2
 - add support for multiple CRLs with same subject
 - load only dynamic engine support in FIPS mode
 
-* Wed Mar 25 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-1
+* Wed Mar 25 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8k-1
 - update to new upstream release (minor bug fixes, security
   fixes and machine code optimizations only)
 
-* Thu Mar 19 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-10
+* Thu Mar 19 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8j-10
 - move libraries to /usr/lib (#239375)
 
-* Fri Mar 13 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-9
+* Fri Mar 13 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8j-9
 - add a static subpackage
 
 * Thu Feb 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.8j-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
-* Mon Feb  2 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-7
+* Mon Feb  2 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8j-7
 - must also verify checksum of libssl.so in the FIPS mode
 - obtain the seed for FIPS rng directly from the kernel device
 - drop the temporary symlinks
 
-* Mon Jan 26 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-6
+* Mon Jan 26 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8j-6
 - drop the temporary triggerpostun and symlinking in post
 - fix the pkgconfig files and drop the unnecessary buildrequires
   on pkgconfig as it is a rpmbuild dependency (#481419)
 
-* Sat Jan 17 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-5
+* Sat Jan 17 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8j-5
 - add temporary triggerpostun to reinstate the symlinks
 
-* Sat Jan 17 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-4
+* Sat Jan 17 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8j-4
 - no pairwise key tests in non-fips mode (#479817)
 
-* Fri Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-3
+* Fri Jan 16 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8j-3
 - even more robust test for the temporary symlinks
 
-* Fri Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-2
+* Fri Jan 16 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8j-2
 - try to ensure the temporary symlinks exist
 
-* Thu Jan 15 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-1
+* Thu Jan 15 2009 Tomas Mraz <tmraz@redhat.com> - 0.9.8j-1
 - new upstream version with necessary soname bump (#455753)
 - temporarily provide symlink to old soname to make it possible to rebuild
   the dependent packages in rawhide
@@ -1287,88 +1293,88 @@ rm -rf %{buildroot}
 - do not null dereference on some invalid smime files
 - add buildrequires pkgconfig (#479493)
 
-* Sun Aug 10 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-11
+* Sun Aug 10 2008 Tomas Mraz <tmraz@redhat.com> - 0.9.8g-11
 - do not add tls extensions to server hello for SSLv3 either
 
-* Mon Jun  2 2008 Joe Orton <jorton@redhat.com> 0.9.8g-10
+* Mon Jun  2 2008 Joe Orton <jorton@redhat.com> - 0.9.8g-10
 - move root CA bundle to ca-certificates package
 
-* Wed May 28 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-9
+* Wed May 28 2008 Tomas Mraz <tmraz@redhat.com> - 0.9.8g-9
 - fix CVE-2008-0891 - server name extension crash (#448492)
 - fix CVE-2008-1672 - server key exchange message omit crash (#448495)
 
-* Tue May 27 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-8
+* Tue May 27 2008 Tomas Mraz <tmraz@redhat.com> - 0.9.8g-8
 - super-H arch support
 - drop workaround for bug 199604 as it should be fixed in gcc-4.3
 
-* Mon May 19 2008 Tom "spot" Callaway <tcallawa@redhat.com> 0.9.8g-7
+* Mon May 19 2008 Tom "spot" Callaway <tcallawa@redhat.com> - 0.9.8g-7
 - sparc handling
 
-* Mon Mar 10 2008 Joe Orton <jorton@redhat.com> 0.9.8g-6
+* Mon Mar 10 2008 Joe Orton <jorton@redhat.com> - 0.9.8g-6
 - update to new root CA bundle from mozilla.org (r1.45)
 
 * Wed Feb 20 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 0.9.8g-5
 - Autorebuild for GCC 4.3
 
-* Thu Jan 24 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-4
+* Thu Jan 24 2008 Tomas Mraz <tmraz@redhat.com> - 0.9.8g-4
 - merge review fixes (#226220)
 - adjust the SHLIB_VERSION_NUMBER to reflect library name (#429846)
 
-* Thu Dec 13 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-3
+* Thu Dec 13 2007 Tomas Mraz <tmraz@redhat.com> - 0.9.8g-3
 - set default paths when no explicit paths are set (#418771)
 - do not add tls extensions to client hello for SSLv3 (#422081)
 
-* Tue Dec  4 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-2
+* Tue Dec  4 2007 Tomas Mraz <tmraz@redhat.com> - 0.9.8g-2
 - enable some new crypto algorithms and features
 - add some more important bug fixes from openssl CVS
 
-* Mon Dec  3 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-1
+* Mon Dec  3 2007 Tomas Mraz <tmraz@redhat.com> - 0.9.8g-1
 - update to latest upstream release, SONAME bumped to 7
 
-* Mon Oct 15 2007 Joe Orton <jorton@redhat.com> 0.9.8b-17
+* Mon Oct 15 2007 Joe Orton <jorton@redhat.com> - 0.9.8b-17
 - update to new CA bundle from mozilla.org
 
-* Fri Oct 12 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8b-16
+* Fri Oct 12 2007 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-16
 - fix CVE-2007-5135 - off-by-one in SSL_get_shared_ciphers (#309801)
 - fix CVE-2007-4995 - out of order DTLS fragments buffer overflow (#321191)
 - add alpha sub-archs (#296031)
 
-* Tue Aug 21 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8b-15
+* Tue Aug 21 2007 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-15
 - rebuild
 
-* Fri Aug  3 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8b-14
+* Fri Aug  3 2007 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-14
 - use localhost in testsuite, hopefully fixes slow build in koji
 - CVE-2007-3108 - fix side channel attack on private keys (#250577)
 - make ssl session cache id matching strict (#233599)
 
-* Wed Jul 25 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8b-13
+* Wed Jul 25 2007 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-13
 - allow building on ARM architectures (#245417)
 - use reference timestamps to prevent multilib conflicts (#218064)
 - -devel package must require pkgconfig (#241031)
 
-* Mon Dec 11 2006 Tomas Mraz <tmraz@redhat.com> 0.9.8b-12
+* Mon Dec 11 2006 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-12
 - detect duplicates in add_dir properly (#206346)
 
-* Thu Nov 30 2006 Tomas Mraz <tmraz@redhat.com> 0.9.8b-11
+* Thu Nov 30 2006 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-11
 - the previous change still didn't make X509_NAME_cmp transitive
 
-* Thu Nov 23 2006 Tomas Mraz <tmraz@redhat.com> 0.9.8b-10
+* Thu Nov 23 2006 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-10
 - make X509_NAME_cmp transitive otherwise certificate lookup
   is broken (#216050)
 
-* Thu Nov  2 2006 Tomas Mraz <tmraz@redhat.com> 0.9.8b-9
+* Thu Nov  2 2006 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-9
 - aliasing bug in engine loading, patch by IBM (#213216)
 
-* Mon Oct  2 2006 Tomas Mraz <tmraz@redhat.com> 0.9.8b-8
+* Mon Oct  2 2006 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-8
 - CVE-2006-2940 fix was incorrect (#208744)
 
-* Mon Sep 25 2006 Tomas Mraz <tmraz@redhat.com> 0.9.8b-7
+* Mon Sep 25 2006 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-7
 - fix CVE-2006-2937 - mishandled error on ASN.1 parsing (#207276)
 - fix CVE-2006-2940 - parasitic public keys DoS (#207274)
 - fix CVE-2006-3738 - buffer overflow in SSL_get_shared_ciphers (#206940)
 - fix CVE-2006-4343 - sslv2 client DoS (#206940)
 
-* Tue Sep  5 2006 Tomas Mraz <tmraz@redhat.com> 0.9.8b-6
+* Tue Sep  5 2006 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-6
 - fix CVE-2006-4339 - prevent attack on PKCS#1 v1.5 signatures (#205180)
 
 * Wed Aug  2 2006 Tomas Mraz <tmraz@redhat.com> - 0.9.8b-5
@@ -1416,75 +1422,75 @@ rm -rf %{buildroot}
 * Tue Feb 07 2006 Jesse Keating <jkeating@redhat.com> - 0.9.8a-5.1
 - rebuilt for new gcc4.1 snapshot and glibc changes
 
-* Thu Dec 15 2005 Tomas Mraz <tmraz@redhat.com> 0.9.8a-5
+* Thu Dec 15 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.8a-5
 - don't include SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG
   in SSL_OP_ALL (#175779)
 
 * Fri Dec 09 2005 Jesse Keating <jkeating@redhat.com>
 - rebuilt
 
-* Tue Nov 29 2005 Tomas Mraz <tmraz@redhat.com> 0.9.8a-4
+* Tue Nov 29 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.8a-4
 - fix build (-lcrypto was erroneusly dropped) of the updated libica
 - updated ICA engine to 1.3.6-rc3
 
-* Tue Nov 22 2005 Tomas Mraz <tmraz@redhat.com> 0.9.8a-3
+* Tue Nov 22 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.8a-3
 - disable builtin compression methods for now until they work
   properly (#173399)
 
-* Wed Nov 16 2005 Tomas Mraz <tmraz@redhat.com> 0.9.8a-2
+* Wed Nov 16 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.8a-2
 - don't set -rpath for openssl binary
 
-* Tue Nov  8 2005 Tomas Mraz <tmraz@redhat.com> 0.9.8a-1
+* Tue Nov  8 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.8a-1
 - new upstream version
 - patches partially renumbered
 
-* Fri Oct 21 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7f-11
+* Fri Oct 21 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7f-11
 - updated IBM ICA engine library and patch to latest upstream version
 
-* Wed Oct 12 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7f-10
+* Wed Oct 12 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7f-10
 - fix CAN-2005-2969 - remove SSL_OP_MSIE_SSLV2_RSA_PADDING which
   disables the countermeasure against man in the middle attack in SSLv2
   (#169863)
 - use sha1 as default for CA and cert requests - CAN-2005-2946 (#169803)
 
-* Tue Aug 23 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7f-9
+* Tue Aug 23 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7f-9
 - add *.so.soversion as symlinks in /lib (#165264)
 - remove unpackaged symlinks (#159595)
 - fixes from upstream (constant time fixes for DSA,
   bn assembler div on ppc arch, initialize memory on realloc)
 
-* Thu Aug 11 2005 Phil Knirsch <pknirsch@redhat.com> 0.9.7f-8
+* Thu Aug 11 2005 Phil Knirsch <pknirsch@redhat.com> - 0.9.7f-8
 - Updated ICA engine IBM patch to latest upstream version.
 
-* Thu May 19 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7f-7
+* Thu May 19 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7f-7
 - fix CAN-2005-0109 - use constant time/memory access mod_exp
   so bits of private key aren't leaked by cache eviction (#157631)
 - a few more fixes from upstream 0.9.7g
 
-* Wed Apr 27 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7f-6
+* Wed Apr 27 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7f-6
 - use poll instead of select in rand (#128285)
 - fix Makefile.certificate to point to /etc/pki/tls
 - change the default string mask in ASN1 to PrintableString+UTF8String
 
-* Mon Apr 25 2005 Joe Orton <jorton@redhat.com> 0.9.7f-5
+* Mon Apr 25 2005 Joe Orton <jorton@redhat.com> - 0.9.7f-5
 - update to revision 1.37 of Mozilla CA bundle
 
-* Thu Apr 21 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7f-4
+* Thu Apr 21 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7f-4
 - move certificates to _sysconfdir/pki/tls (#143392)
 - move CA directories to _sysconfdir/pki/CA
 - patch the CA script and the default config so it points to the
   CA directories
 
-* Fri Apr  1 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7f-3
+* Fri Apr  1 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7f-3
 - uninitialized variable mustn't be used as input in inline
   assembly
 - reenable the x86_64 assembly again
 
-* Thu Mar 31 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7f-2
+* Thu Mar 31 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7f-2
 - add back RC4_CHAR on ia64 and x86_64 so the ABI isn't broken
 - disable broken bignum assembly on x86_64
 
-* Wed Mar 30 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7f-1
+* Wed Mar 30 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7f-1
 - reenable optimizations on ppc64 and assembly code on ia64
 - upgrade to new upstream version (no soname bump needed)
 - disable thread test - it was testing the backport of the
@@ -1493,13 +1499,13 @@ rm -rf %{buildroot}
   Makefile.certificate (#151188)
 - make ca-bundle.crt a config file (#118903)
 
-* Tue Mar  1 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7e-3
+* Tue Mar  1 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7e-3
 - libcrypto shouldn't depend on libkrb5 (#135961)
 
-* Mon Feb 28 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7e-2
+* Mon Feb 28 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7e-2
 - rebuild
 
-* Mon Feb 28 2005 Tomas Mraz <tmraz@redhat.com> 0.9.7e-1
+* Mon Feb 28 2005 Tomas Mraz <tmraz@redhat.com> - 0.9.7e-1
 - new upstream source, updated patches
 - added patch so we are hopefully ABI compatible with upcoming
   0.9.7f
@@ -1508,108 +1514,108 @@ rm -rf %{buildroot}
 - Support UTF-8 charset in the Makefile.certificate (#134944)
 - Added cmp to BuildPrereq
 
-* Thu Jan 27 2005 Joe Orton <jorton@redhat.com> 0.9.7a-46
+* Thu Jan 27 2005 Joe Orton <jorton@redhat.com> - 0.9.7a-46
 - generate new ca-bundle.crt from Mozilla certdata.txt (revision 1.32)
 
-* Thu Dec 23 2004 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-45
+* Thu Dec 23 2004 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-45
 - Fixed and updated libica-1.3.4-urandom.patch patch (#122967)
 
-* Fri Nov 19 2004 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-44
+* Fri Nov 19 2004 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-44
 - rebuild
 
-* Fri Nov 19 2004 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-43
+* Fri Nov 19 2004 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-43
 - rebuild
 
-* Fri Nov 19 2004 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-42
+* Fri Nov 19 2004 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-42
 - rebuild
 
-* Fri Nov 19 2004 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-41
+* Fri Nov 19 2004 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-41
 - remove der_chop, as upstream cvs has done (CAN-2004-0975, #140040)
 
-* Tue Oct 05 2004 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-40
+* Tue Oct 05 2004 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-40
 - Include latest libica version with important bugfixes
 
 * Tue Jun 15 2004 Elliot Lee <sopwith@redhat.com>
 - rebuilt
 
-* Mon Jun 14 2004 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-38
+* Mon Jun 14 2004 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-38
 - Updated ICA engine IBM patch to latest upstream version.
 
-* Mon Jun  7 2004 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-37
+* Mon Jun  7 2004 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-37
 - build for linux-alpha-gcc instead of alpha-gcc on alpha (Jeff Garzik)
 
-* Tue May 25 2004 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-36
+* Tue May 25 2004 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-36
 - handle %%{_arch}=i486/i586/i686/athlon cases in the intermediate
   header (#124303)
 
-* Thu Mar 25 2004 Joe Orton <jorton@redhat.com> 0.9.7a-35
+* Thu Mar 25 2004 Joe Orton <jorton@redhat.com> - 0.9.7a-35
 - add security fixes for CAN-2004-0079, CAN-2004-0112
 
 * Tue Mar 16 2004 Phil Knirsch <pknirsch@redhat.com>
 - Fixed libica filespec.
 
-* Thu Mar 11 2004 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-34
+* Thu Mar 11 2004 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-34
 - ppc/ppc64 define __powerpc__/__powerpc64__, not __ppc__/__ppc64__, fix
   the intermediate header
 
-* Wed Mar 10 2004 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-33
+* Wed Mar 10 2004 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-33
 - add an intermediate <openssl/opensslconf.h> which points to the right
   arch-specific opensslconf.h on multilib arches
 
 * Tue Mar 02 2004 Elliot Lee <sopwith@redhat.com>
 - rebuilt
 
-* Thu Feb 26 2004 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-32
+* Thu Feb 26 2004 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-32
 - Updated libica to latest upstream version 1.3.5.
 
-* Tue Feb 17 2004 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-31
+* Tue Feb 17 2004 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-31
 - Update ICA crypto engine patch from IBM to latest version.
 
 * Fri Feb 13 2004 Elliot Lee <sopwith@redhat.com>
 - rebuilt
 
-* Fri Feb 13 2004 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-29
+* Fri Feb 13 2004 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-29
 - rebuilt
 
-* Wed Feb 11 2004 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-28
+* Wed Feb 11 2004 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-28
 - Fixed libica build.
 
 * Wed Feb  4 2004 Nalin Dahyabhai <nalin@redhat.com>
 - add "-ldl" to link flags added for Linux-on-ARM (#99313)
 
-* Wed Feb  4 2004 Joe Orton <jorton@redhat.com> 0.9.7a-27
+* Wed Feb  4 2004 Joe Orton <jorton@redhat.com> - 0.9.7a-27
 - updated ca-bundle.crt: removed expired GeoTrust roots, added
   freessl.com root, removed trustcenter.de Class 0 root
 
-* Sun Nov 30 2003 Tim Waugh <twaugh@redhat.com> 0.9.7a-26
+* Sun Nov 30 2003 Tim Waugh <twaugh@redhat.com> - 0.9.7a-26
 - Fix link line for libssl (bug #111154).
 
-* Fri Oct 24 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-25
+* Fri Oct 24 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-25
 - add dependency on zlib-devel for the -devel package, which depends on zlib
   symbols because we enable zlib for libssl (#102962)
 
-* Fri Oct 24 2003 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-24
+* Fri Oct 24 2003 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-24
 - Use /dev/urandom instead of PRNG for libica.
 - Apply libica-1.3.5 fix for /dev/urandom in icalinux.c
 - Use latest ICA engine patch from IBM.
 
-* Sat Oct  4 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-22.1
+* Sat Oct  4 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-22.1
 - rebuild
 
-* Wed Oct  1 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-22
+* Wed Oct  1 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-22
 - rebuild (22 wasn't actually built, fun eh?)
 
-* Tue Sep 30 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-23
+* Tue Sep 30 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-23
 - re-disable optimizations on ppc64
 
 * Tue Sep 30 2003 Joe Orton <jorton@redhat.com>
 - add a_mbstr.c fix for 64-bit platforms from CVS
 
-* Tue Sep 30 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-22
+* Tue Sep 30 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-22
 - add -Wa,--noexecstack to RPM_OPT_FLAGS so that assembled modules get tagged
   as not needing executable stacks
 
-* Mon Sep 29 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-21
+* Mon Sep 29 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-21
 - rebuild
 
 * Thu Sep 25 2003 Nalin Dahyabhai <nalin@redhat.com>
@@ -1618,7 +1624,7 @@ rm -rf %{buildroot}
 * Thu Sep 25 2003 Nalin Dahyabhai <nalin@redhat.com>
 - remove exclusivearch
 
-* Wed Sep 24 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-20
+* Wed Sep 24 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-20
 - only parse a client cert if one was requested
 - temporarily exclusivearch for %%{ix86}
 
@@ -1628,43 +1634,43 @@ rm -rf %{buildroot}
 - update RHNS-CA-CERT files
 - ease back on the number of threads used in the threading test
 
-* Wed Sep 17 2003 Matt Wilson <msw@redhat.com> 0.9.7a-19
+* Wed Sep 17 2003 Matt Wilson <msw@redhat.com> - 0.9.7a-19
 - rebuild to fix gzipped file md5sums (#91211)
 
-* Mon Aug 25 2003 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-18
+* Mon Aug 25 2003 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-18
 - Updated libica to version 1.3.4.
 
-* Thu Jul 17 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-17
+* Thu Jul 17 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-17
 - rebuild
 
-* Tue Jul 15 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-10.9
+* Tue Jul 15 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-10.9
 - free the kssl_ctx structure when we free an SSL structure (#99066)
 
-* Fri Jul 11 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-16
+* Fri Jul 11 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-16
 - rebuild
 
-* Thu Jul 10 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-15
+* Thu Jul 10 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-15
 - lower thread test count on s390x
 
-* Tue Jul  8 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-14
+* Tue Jul  8 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-14
 - rebuild
 
-* Thu Jun 26 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-13
+* Thu Jun 26 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-13
 - disable assembly on arches where it seems to conflict with threading
 
-* Thu Jun 26 2003 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-12
+* Thu Jun 26 2003 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-12
 - Updated libica to latest upstream version 1.3.0
 
-* Wed Jun 11 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-9.9
+* Wed Jun 11 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-9.9
 - rebuild
 
-* Wed Jun 11 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-11
+* Wed Jun 11 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-11
 - rebuild
 
-* Tue Jun 10 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-10
+* Tue Jun 10 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-10
 - ubsec: don't stomp on output data which might also be input data
 
-* Tue Jun 10 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-9
+* Tue Jun 10 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-9
 - temporarily disable optimizations on ppc64
 
 * Mon Jun  9 2003 Nalin Dahyabhai <nalin@redhat.com>
@@ -1676,41 +1682,41 @@ rm -rf %{buildroot}
 * Fri Jun  6 2003 Nalin Dahyabhai <nalin@redhat.com>
 - thread-safety fix for RSA blinding
 
-* Wed Jun 04 2003 Elliot Lee <sopwith@redhat.com> 0.9.7a-8
+* Wed Jun 04 2003 Elliot Lee <sopwith@redhat.com> - 0.9.7a-8
 - rebuilt
 
-* Fri May 30 2003 Phil Knirsch <pknirsch@redhat.com> 0.9.7a-7
+* Fri May 30 2003 Phil Knirsch <pknirsch@redhat.com> - 0.9.7a-7
 - Added libica-1.2 to openssl (featurerequest).
 
-* Wed Apr 16 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-6
+* Wed Apr 16 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-6
 - fix building with incorrect flags on ppc64
 
-* Wed Mar 19 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-5
+* Wed Mar 19 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-5
 - add patch to harden against Klima-Pokorny-Rosa extension of Bleichenbacher's
   attack (CAN-2003-0131)
 
-* Mon Mar 17 2003 Nalin Dahyabhai <nalin@redhat.com>  0.9.7a-4
+* Mon Mar 17 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-4
 - add patch to enable RSA blinding by default, closing a timing attack
   (CAN-2003-0147)
 
-* Wed Mar  5 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-3
+* Wed Mar  5 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-3
 - disable use of BN assembly module on x86_64, but continue to allow inline
   assembly (#83403)
 
-* Thu Feb 27 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-2
+* Thu Feb 27 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-2
 - disable EC algorithms
 
-* Wed Feb 19 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-1
+* Wed Feb 19 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7a-1
 - update to 0.9.7a
 
-* Wed Feb 19 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7-8
+* Wed Feb 19 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7-8
 - add fix to guard against attempts to allocate negative amounts of memory
 - add patch for CAN-2003-0078, fixing a timing attack
 
-* Thu Feb 13 2003 Elliot Lee <sopwith@redhat.com> 0.9.7-7
+* Thu Feb 13 2003 Elliot Lee <sopwith@redhat.com> - 0.9.7-7
 - Add openssl-ppc64.patch
 
-* Mon Feb 10 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7-6
+* Mon Feb 10 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7-6
 - EVP_DecryptInit should call EVP_CipherInit() instead of EVP_CipherInit_ex(),
   to get the right behavior when passed uninitialized context structures
   (#83766)
@@ -1719,57 +1725,57 @@ rm -rf %{buildroot}
 * Wed Jan 22 2003 Tim Powers <timp@redhat.com>
 - rebuilt
 
-* Fri Jan 17 2003 Phil Knirsch <pknirsch@redhat.com> 0.9.7-4
+* Fri Jan 17 2003 Phil Knirsch <pknirsch@redhat.com> - 0.9.7-4
 - Added IBM hw crypto support patch.
 
 * Wed Jan 15 2003 Nalin Dahyabhai <nalin@redhat.com>
 - add missing builddep on sed
 
-* Thu Jan  9 2003 Bill Nottingham <notting@redhat.com> 0.9.7-3
+* Thu Jan  9 2003 Bill Nottingham <notting@redhat.com> - 0.9.7-3
 - debloat
 - fix broken manpage symlinks
 
-* Wed Jan  8 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7-2
+* Wed Jan  8 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7-2
 - fix double-free in 'openssl ca'
 
-* Fri Jan  3 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7-1
+* Fri Jan  3 2003 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7-1
 - update to 0.9.7 final
 
-* Tue Dec 17 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.7-0
+* Tue Dec 17 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.7-0
 - update to 0.9.7 beta6 (DO NOT USE UNTIL UPDATED TO FINAL 0.9.7)
 
 * Wed Dec 11 2002 Nalin Dahyabhai <nalin@redhat.com>
 - update to 0.9.7 beta5 (DO NOT USE UNTIL UPDATED TO FINAL 0.9.7)
 
-* Tue Oct 22 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-30
+* Tue Oct 22 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-30
 - add configuration stanza for x86_64 and use it on x86_64
 - build for linux-ppc on ppc
 - start running the self-tests again
 
-* Wed Oct 02 2002 Elliot Lee <sopwith@redhat.com> 0.9.6b-29hammer.3
+* Wed Oct 02 2002 Elliot Lee <sopwith@redhat.com> - 0.9.6b-29hammer.3
 - Merge fixes from previous hammer packages, including general x86-64 and
   multilib
 
-* Tue Aug  6 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-29
+* Tue Aug  6 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-29
 - rebuild
 
-* Thu Aug  1 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-28
+* Thu Aug  1 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-28
 - update asn patch to fix accidental reversal of a logic check
 
-* Wed Jul 31 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-27
+* Wed Jul 31 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-27
 - update asn patch to reduce chance that compiler optimization will remove
   one of the added tests
 
-* Wed Jul 31 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-26
+* Wed Jul 31 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-26
 - rebuild
 
-* Mon Jul 29 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-25
+* Mon Jul 29 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-25
 - add patch to fix ASN.1 vulnerabilities
 
-* Thu Jul 25 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-24
+* Thu Jul 25 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-24
 - add backport of Ben Laurie's patches for OpenSSL 0.9.6d
 
-* Wed Jul 17 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-23
+* Wed Jul 17 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-23
 - own {_datadir}/ssl/misc
 
 * Fri Jun 21 2002 Tim Powers <timp@redhat.com>
@@ -1778,13 +1784,13 @@ rm -rf %{buildroot}
 * Sun May 26 2002 Tim Powers <timp@redhat.com>
 - automated rebuild
 
-* Fri May 17 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-20
+* Fri May 17 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-20
 - free ride through the build system (whee!)
 
-* Thu May 16 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-19
+* Thu May 16 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-19
 - rebuild in new environment
 
-* Thu Apr  4 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-17, 0.9.6b-18
+* Thu Apr  4 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-17, 0.9.6b-18
 - merge RHL-specific bits into stronghold package, rename
 
 * Tue Apr 02 2002 Gary Benson <gbenson@redhat.com> stronghold-0.9.6c-2
@@ -1793,14 +1799,14 @@ rm -rf %{buildroot}
 * Tue Mar 26 2002 Gary Benson <gbenson@redhat.com>
 - disable AEP random number generation, other AEP fixes
 
-* Fri Mar 15 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-15
+* Fri Mar 15 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-15
 - only build subpackages on primary arches
 
-* Thu Mar 14 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-13
+* Thu Mar 14 2002 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-13
 - on ia32, only disable use of assembler on i386
 - enable assembly on ia64
 
-* Mon Jan  7 2002 Florian La Roche <Florian.LaRoche@redhat.de> 0.9.6b-11
+* Mon Jan  7 2002 Florian La Roche <Florian.LaRoche@redhat.de> - 0.9.6b-11
 - fix sparcv9 entry
 
 * Mon Jan  7 2002 Gary Benson <gbenson@redhat.com> stronghold-0.9.6c-1
@@ -1812,25 +1818,25 @@ rm -rf %{buildroot}
 * Wed Oct 10 2001 Florian La Roche <Florian.LaRoche@redhat.de>
 - delete BN_LLONG for s390x, patch from Oliver Paukstadt
 
-* Mon Sep 17 2001 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-9
+* Mon Sep 17 2001 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-9
 - update AEP driver patch
 
 * Mon Sep 10 2001 Nalin Dahyabhai <nalin@redhat.com>
 - adjust RNG disabling patch to match version of patch from Broadcom
 
-* Fri Sep  7 2001 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-8
+* Fri Sep  7 2001 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-8
 - disable the RNG in the ubsec engine driver
 
-* Tue Aug 28 2001 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-7
+* Tue Aug 28 2001 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-7
 - tweaks to the ubsec engine driver
 
-* Fri Aug 24 2001 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-6
+* Fri Aug 24 2001 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-6
 - tweaks to the ubsec engine driver
 
-* Thu Aug 23 2001 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-5
+* Thu Aug 23 2001 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-5
 - update ubsec engine driver from Broadcom
 
-* Fri Aug 10 2001 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-4
+* Fri Aug 10 2001 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-4
 - move man pages back to %%{_mandir}/man?/foo.?ssl from
   %%{_mandir}/man?ssl/foo.?
 - add an [ engine ] section to the default configuration file
@@ -1838,19 +1844,19 @@ rm -rf %{buildroot}
 * Thu Aug  9 2001 Nalin Dahyabhai <nalin@redhat.com>
 - add a patch for selecting a default engine in SSL_library_init()
 
-* Mon Jul 23 2001 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-3
+* Mon Jul 23 2001 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-3
 - add patches for AEP hardware support
 - add patch to keep trying when we fail to load a cert from a file and
   there are more in the file
 - add missing prototype for ENGINE_ubsec() in engine_int.h
 
-* Wed Jul 18 2001 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-2
+* Wed Jul 18 2001 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-2
 - actually add hw_ubsec to the engine list
 
 * Tue Jul 17 2001 Nalin Dahyabhai <nalin@redhat.com>
 - add in the hw_ubsec driver from CVS
 
-* Wed Jul 11 2001 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-1
+* Wed Jul 11 2001 Nalin Dahyabhai <nalin@redhat.com> - 0.9.6b-1
 - update to 0.9.6b
 
 * Thu Jul  5 2001 Nalin Dahyabhai <nalin@redhat.com>

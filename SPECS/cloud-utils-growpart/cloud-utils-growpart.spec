@@ -1,14 +1,13 @@
 Summary:        Shell script to auto detect free size on disk and grow partition.
 Name:           cloud-utils-growpart
 Version:        0.32
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          System Environment
 URL:            https://launchpad.net/cloud-utils
 Source0:        https://launchpad.net/cloud-utils/trunk/%{version}/+download/cloud-utils-%{version}.tar.gz
-Patch0:         growpart-remove-flock-disk-locking.patch
 Requires:       gawk
 Requires:       gptfdisk
 Requires:       util-linux
@@ -21,7 +20,6 @@ This is generally used by cloud-init for disk space manangement on cloud images.
 
 %prep
 %setup -q -n cloud-utils-%{version}
-%patch0 -p1
 
 %build
 
@@ -37,6 +35,9 @@ cp man/growpart.* $RPM_BUILD_ROOT/%{_mandir}/man1/
 %doc %{_mandir}/man1/growpart.*
 
 %changelog
+* Thu Jun 03 2021 Chris Co <chrco@microsoft.com> - 0.32-3
+- Remove patch now that unexpected timeout was root caused and fixed
+
 * Tue Apr 27 2021 Chris Co <chrco@microsoft.com> - 0.32-2
 - Add patch to handle unexpected timeout
 

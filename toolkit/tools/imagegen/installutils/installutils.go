@@ -286,7 +286,9 @@ func umount(path string) (err error) {
 }
 
 // PackageNamesFromSingleSystemConfig goes through the packageslist field in the systemconfig and extracts the list of packages
-// from each of the packagelists
+// from each of the packagelists.
+// NOTE: the package list contains the versions restrictions for the packages, if present, in the form "[package][condition][version]".
+//       Example: gcc=9.1.0
 // - systemConfig is the systemconfig field from the config file
 // Since kernel is not part of the packagelist, it is added separately from KernelOptions.
 func PackageNamesFromSingleSystemConfig(systemConfig configuration.SystemConfig) (finalPkgList []string, err error) {
@@ -354,9 +356,15 @@ func PackageNamesFromConfig(config configuration.Config) (packageList []*pkgjson
 
 		packages := make([]*pkgjson.PackageVer, 0, len(packagesToInstall))
 		for _, pkg := range packagesToInstall {
-			packages = append(packages, &pkgjson.PackageVer{
-				Name: pkg,
-			})
+			var packageVer *pkgjson.PackageVer
+
+			packageVer, err = pkgjson.PackagesListEntryToPackageVer(pkg)
+			if err != nil {
+				logger.Log.Errorf("Failed to parse packages list from system config \"%s\".", systemCfg.Name)
+				return
+			}
+
+			packages = append(packages, packageVer)
 		}
 
 		packageList = append(packageList, packages...)

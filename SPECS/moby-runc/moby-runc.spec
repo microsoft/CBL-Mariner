@@ -1,22 +1,23 @@
 Summary:        CLI tool for spawning and running containers per OCI spec.
 Name:           moby-runc
-Version:        1.0.0~rc10+azure
-Release:        5%{?dist}
+Version:        1.0.0~rc95+azure
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://runc.io/
 
-#Source0:       https://github.com/opencontainers/runc/releases/download/v1.0.0-rc10/runc.tar.xz
-Source0:        runc-v1.0.0-rc10.tar.xz
-#Source1:       https://github.com/sirupsen/logrus/archive/v1.4.1.tar.gz
-Source1:        logrus-v1.4.1.tar.gz
+# See generate-sources.sh for creating runc source tarball
+#Source0:       https://github.com/opencontainers/runc/releases/download/v1.0.0-rc95/runc.tar.xz
+Source0:        runc-v1.0.0-rc95.tar.gz
+#Source1:       https://github.com/sirupsen/logrus/archive/v1.8.1.tar.gz
+Source1:        logrus-v1.8.1.tar.gz
 #Source2:       https://github.com/opencontainers/runtime-spec/archive/v1.0.2.tar.gz
 Source2:        runtime-spec-v1.0.2.tar.gz
-#Source3:       https://github.com/urfave/cli/archive/v1.22.4.tar.gz
-Source3:        urfave-cli-v1.22.4.tar.gz
+#Source3:       https://github.com/urfave/cli/archive/v2.3.0.tar.gz
+Source3:        urfave-cli-v2.3.0.tar.gz
 # golang sys and crypto sources are git cloned to latest commit.
 # Please look for ./getgosources.sh for more details.
-Source4:        https://github.com/golang/sys/archive/golang-sys-669c56c373c468cbe0f0c12b7939832b26088d33.tar.gz
-Source5:        https://github.com/golang/crypto/archive/golang-crypto-0848c9571904fcbcb24543358ca8b5a7dbfde875.tar.gz
+Source4:        https://github.com/golang/sys/archive/golang-sys-b0526f3d87448f0401ea3f7f3a81aa9e6ab4804d.tar.gz
+Source5:        https://github.com/golang/crypto/archive/golang-crypto-c07d793c2f9aacf728fe68cbd7acd73adbd04159.tar.gz
 Source6:        NOTICE
 Source7:        LICENSE
 
@@ -60,7 +61,7 @@ runC is a CLI tool for spawning and running containers according to the OCI spec
 %prep
 %setup -q -n %{name}-%{version} -c
 mkdir -p %{OUR_GOPATH}/src/github.com/opencontainers
-ln -sfT %{_topdir}/BUILD/%{name}-%{version}/runc-1.0.0-rc10 %{OUR_GOPATH}/src/github.com/opencontainers/runc
+ln -svfT %{_topdir}/BUILD/%{name}-%{version}/runc %{OUR_GOPATH}/src/github.com/opencontainers/runc
 
 pushd ..
 
@@ -76,8 +77,8 @@ mkdir -p %{OUR_GOPATH}/src/github.com/urfave/
 mkdir -p %{OUR_GOPATH}/src/golang.org/x/
 
 ln -sfT %{_topdir}/BUILD/%{name}-%{version}/runtime-spec-1.0.2 %{OUR_GOPATH}/src/github.com/opencontainers/runtime-spec
-ln -sfT %{_topdir}/BUILD/%{name}-%{version}/logrus-1.4.1 %{OUR_GOPATH}/src/github.com/sirupsen/logrus
-ln -sfT %{_topdir}/BUILD/%{name}-%{version}/cli-1.22.4 %{OUR_GOPATH}/src/github.com/urfave/cli
+ln -sfT %{_topdir}/BUILD/%{name}-%{version}/logrus-1.8.1 %{OUR_GOPATH}/src/github.com/sirupsen/logrus
+ln -sfT %{_topdir}/BUILD/%{name}-%{version}/cli-2.3.0 %{OUR_GOPATH}/src/github.com/urfave/cli
 ln -sfT %{_topdir}/BUILD/%{name}-%{version}/sys-master %{OUR_GOPATH}/src/golang.org/x/sys
 ln -sfT %{_topdir}/BUILD/%{name}-%{version}/crypto-master %{OUR_GOPATH}/src/golang.org/x/crypto
 
@@ -113,6 +114,12 @@ cp %{SOURCE7} %{buildroot}/usr/share/doc/%{name}-%{version}/LICENSE
 %{_mandir}/*/*
 
 %changelog
+* Wed May 19 2021 Andrew Phelps <anphel@microsoft.com> 1.0.0~rc95+azure-1
+- Update to version 1.0.0~rc95+azure to fix CVE-2021-30465
+* Thu May 13 2021 Andrew Phelps <anphel@microsoft.com> 1.0.0~rc94+azure-1
+- Update to version 1.0.0~rc94+azure
+* Mon Apr 26 2021 Nicolas Guibourge <nicolasg@microsoft.com> 1.0.0~rc10+azure-6
+- Increment release to force republishing using golang 1.15.11.
 * Thu Dec 10 2020 Andrew Phelps <anphel@microsoft.com> 1.0.0~rc10+azure-5
 - Increment release to force republishing using golang 1.15.
 * Wed May 20 2020 Joe Schmitt <joschmit@microsoft.com> 1.0.0~rc10+azure-4

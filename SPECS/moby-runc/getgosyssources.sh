@@ -5,7 +5,7 @@
 
 # golang sys sources are git cloned to latest commit.
 GOLANG_SYS=https://github.com/golang/sys.git
-GOLANG_SYS_COMMIT=669c56c373c468cbe0f0c12b7939832b26088d33
+GOLANG_SYS_COMMIT=b0526f3d87448f0401ea3f7f3a81aa9e6ab4804d
 
 mkdir -p /build/work/sys-master
 cd /build/work/sys-master
@@ -18,7 +18,7 @@ rm -rf /build/work
 
 # golang crypto sources are git cloned to latest commit.
 GOLANG_CRYPO=https://github.com/golang/crypto.git
-GOLANG_CRYPTO_COMMIT=0848c9571904fcbcb24543358ca8b5a7dbfde875
+GOLANG_CRYPTO_COMMIT=c07d793c2f9aacf728fe68cbd7acd73adbd04159
 
 mkdir -p /build/work/crypto-master
 cd /build/work/crypto-master

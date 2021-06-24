@@ -59,6 +59,7 @@
 |                       | Password hashing                      | By default | SHA-512
 |                       | Filesystem Capabilities               | Available  | [Capabilities](https://github.com/torvalds/linux/blob/master/Documentation/security/credentials.rst) and [chattr](https://sourceforge.net/p/e2fsprogs/code/ci/master/tree/misc/chattr.c)
 |                       | Tamper Resistant Logs                 | Available  | [journalctl --verify](https://www.freedesktop.org/software/systemd/man/journalctl.html)
+|                       | Kernel Lockdown                       | Integrity mode by default | [kernel lockdown](https://github.com/torvalds/linux/blob/master/security/lockdown/Kconfig)
 
 
 # References

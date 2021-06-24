@@ -20,4 +20,6 @@ packages:
  - openssh-server
 runcmd:
  - sudo systemctl start sshd
+ - sudo systemctl stop waagent || true
+ - sudo systemctl disable waagent || true
  

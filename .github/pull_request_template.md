@@ -9,6 +9,7 @@ Feel free to delete sections of the template which do not apply to your PR, or a
 - [ ] The toolchain has been rebuilt successfully (or no changes were made to it)
 - [ ] The toolchain/worker package manifests are up-to-date
 - [ ] Any updated packages successfully build (or no packages were changed)
+- [ ] Package tests (%check section) have been verified with RUN_CHECK=y for existing SPEC files, or added to new SPEC files
 - [ ] All package sources are available
 - [ ] cgmanifest files are up-to-date and sorted (`./cgmanifest.json`, `./toolkit/tools/cgmanifest.json`, `./toolkit/scripts/toolchain/cgmanifest.json`, `.github/workflows/cgmanifest.json`)
 - [ ] LICENSE-MAP files are up-to-date (`./SPECS/LICENSES-AND-NOTICES/data/licenses.json`, `./SPECS/LICENSES-AND-NOTICES/LICENSES-MAP.md`, `./SPECS/LICENSES-AND-NOTICES/LICENSE-EXCEPTIONS.PHOTON`)
@@ -33,8 +34,9 @@ What does the PR accomplish, why was it needed?
 
 ###### Does this affect the toolchain?  <!-- REQUIRED -->
 <!-- Any packages which are included in the toolchain should be carefully considered. Make sure the toolchain builds with these changes if so. -->
-**YES**
-NO
+<!-- Update: manifests/package/toolchain_*.txt, pkggen_core_*.txt, update_manifests.sh -->
+<!-- To validate: make clean; make workplan REBUILD_TOOLCHAIN=y DISABLE_UPSTREAM_REPOS=y CONFIG_FILE="" ... -->
+**YES/NO**
 
 ###### Associated issues  <!-- optional -->
 <!-- Link to Github issues if possible. -->
@@ -45,5 +47,5 @@ NO
 - https://nvd.nist.gov/vuln/detail/CVE-YYYY-XXXX
 
 ###### Test Methodology
-<!-- How as this test validated? i.e. local build, pipeline build etc. -->
+<!-- How was this test validated? i.e. local build, pipeline build etc. -->
 - Pipeline build id: xxxx

@@ -8,8 +8,8 @@
 %{!?_export_dir:%global _export_dir /bind9-export/}
 Summary:        Domain Name System software
 Name:           bind
-Version:        9.16.3
-Release:        5%{?dist}
+Version:        9.16.15
+Release:        1%{?dist}
 License:        ISC
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -33,17 +33,10 @@ Source14:       setup-named-softhsm.sh
 Source15:       named-chroot.files
 # CVE-2019-6470 is fixed by updating the dhcp package to 4.4.1 or greater
 Patch0:         CVE-2019-6470.nopatch
-Patch1:         CVE-2020-8618.patch
-Patch2:         CVE-2020-8619.patch
-Patch3:         CVE-2020-8620.patch
-Patch4:         CVE-2020-8621.patch
-Patch5:         CVE-2020-8622.patch
 # CVE-2020-8623 only impacts package built with "--enable-native-pkcs11"
-Patch6:         CVE-2020-8623.nopatch
-Patch7:         CVE-2020-8624.patch
-Patch8:         CVE-2020-8625.patch 
-Patch9:         bind-9.14-config-pkcs11.patch
-Patch10:        bind-9.10-dist-native-pkcs11.patch
+Patch1:         CVE-2020-8623.nopatch
+Patch2:         bind-9.14-config-pkcs11.patch
+Patch3:         bind-9.10-dist-native-pkcs11.patch
 BuildRequires:  gcc
 BuildRequires:  json-c-devel
 BuildRequires:  krb5-devel
@@ -201,20 +194,13 @@ Summary:        BIND utilities
 
 %prep
 %setup -q
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch7 -p1
-%patch8 -p1
 
-%patch9 -p1 -b .config-pkcs11
+%patch2 -p1 -b .config-pkcs11
 cp -r bin/named{,-pkcs11}
 cp -r bin/dnssec{,-pkcs11}
 cp -r lib/dns{,-pkcs11}
 cp -r lib/ns{,-pkcs11}
-%patch10 -p1 -b .dist_pkcs11
+%patch3 -p1 -b .dist_pkcs11
 
 libtoolize -c -f; aclocal -I libtool.m4 --force; autoconf -f
 
@@ -426,7 +412,7 @@ fi;
 %dir /run/named
 
 %files libs
-%{_libdir}/*so.*
+%{_libdir}/*-%{version}*.so
 %exclude %{_libdir}/libdns-pkcs11*
 %exclude %{_libdir}/libns-pkcs11*
 
@@ -546,6 +532,13 @@ fi;
 %{_tmpfilesdir}/named.conf
 
 %changelog
+* Mon Jun 21 2021 Thomas Crain <thcrain@microsoft.com> - 9.16.15-1
+- Update patches for a new version
+- Remove unprovided soname version of libraries
+- Include versioned library names in libs subpackage
+- Merge the following releases from 1.0 to dev branch
+- anphel@microsoft.com, 9.16.15-1: Update version to 9.16.15 to fix CVE-2021-25215
+
 * Fri May 14 2021 Thomas Crain <thcrain@microsoft.com> - 9.16.3-5
 - Merge the following releases from 1.0 to dev branch
 - nicolasg@microsoft.com, 9.16.3-3: Fixes CVE-2020-8625
@@ -560,52 +553,52 @@ fi;
   bind-pkcs11-utils, bind-pkcs11-devel, bind-dnssec-utils, bind-dnssec-doc,
   bind-python3-bind and bind-chroot packages
 
-*   Fri Sep 11 2020 Ruying Chen <v-ruyche@microsoft.com> - 9.16.3-2
--   Fixes CVE-2020-8618, CVE-2020-8619, CVE-2020-8620,
--   CVE-2020-8621, CVE-2020-8622, CVE-2020-8623, CVE-2020-8624
+* Fri Sep 11 2020 Ruying Chen <v-ruyche@microsoft.com> - 9.16.3-2
+- Fixes CVE-2020-8618, CVE-2020-8619, CVE-2020-8620,
+- CVE-2020-8621, CVE-2020-8622, CVE-2020-8623, CVE-2020-8624
 
-*   Wed May 27 2020 Daniel McIlvaney <damcilva@microsoft.com> - 9.16.3-1
--   Update to version 9.16.3, fixes CVE-2018-5743, CVE-2018-5744, CVE-2019-6465, CVE-2019-6467, CVE-2019-6471, CVE-2020-8616, CVE-2020-8617
+* Wed May 27 2020 Daniel McIlvaney <damcilva@microsoft.com> - 9.16.3-1
+- Update to version 9.16.3, fixes CVE-2018-5743, CVE-2018-5744, CVE-2019-6465, CVE-2019-6467, CVE-2019-6471, CVE-2020-8616, CVE-2020-8617
 
-*   Sat May 09 00:21:20 PST 2020 Nick Samson <nisamson@microsoft.com> - 9.13.3-4
--   Added %%license line automatically
+* Sat May 09 00:21:20 PST 2020 Nick Samson <nisamson@microsoft.com> - 9.13.3-4
+- Added %%license line automatically
 
-*   Fri May  1 2020 Emre Girgin <mrgirgin@microsoft.com> 9.13.3-3
--   Renaming bindutils to bind.
--   Add bind-utils subpackage.
+* Fri May  1 2020 Emre Girgin <mrgirgin@microsoft.com> - 9.13.3-3
+- Renaming bindutils to bind.
+- Add bind-utils subpackage.
 
-*   Tue Sep 03 2019 Mateusz Malisz <mamalisz@microsoft.com> 9.13.3-2
--   Initial CBL-Mariner import from Photon (license: Apache2).
+* Tue Sep 03 2019 Mateusz Malisz <mamalisz@microsoft.com> - 9.13.3-2
+- Initial CBL-Mariner import from Photon (license: Apache2).
 
-*   Sun Sep 23 2018 Sujay G <gsujay@vmware.com> 9.13.3-1
--   Bump bindutils version to 9.13.3
+* Sun Sep 23 2018 Sujay G <gsujay@vmware.com> - 9.13.3-1
+- Bump bindutils version to 9.13.3
 
-*   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 9.10.6-1
--   Upgrading version to 9.10.6-P1, fix CVE-2017-3145
+* Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> - 9.10.6-1
+- Upgrading version to 9.10.6-P1, fix CVE-2017-3145
 
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 9.10.4-4
--   Remove shadow from requires and use explicit tools for post actions
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> - 9.10.4-4
+- Remove shadow from requires and use explicit tools for post actions
 
-*   Fri Apr 14 2017 Kumar Kaushik <kaushikk@vmware.com> 9.10.4-3
--   Upgrading version to 9.10.4-P8
+* Fri Apr 14 2017 Kumar Kaushik <kaushikk@vmware.com> - 9.10.4-3
+- Upgrading version to 9.10.4-P8
 
-*   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.10.4-2
--   add shadow to requires
+* Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> - 9.10.4-2
+- add shadow to requires
 
-*   Mon Jun 06 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 9.10.4-1
--   Upgraded the version to 9.10.4
+* Mon Jun 06 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> - 9.10.4-1
+- Upgraded the version to 9.10.4
 
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.10.3-3
--   GA - Bump release of all rpms
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> - 9.10.3-3
+- GA - Bump release of all rpms
 
-*   Fri Apr 29 2016 Xiaolin Li <xiaolinl@vmware.com> 9.10.3-2
--   Add group named and user named
+* Fri Apr 29 2016 Xiaolin Li <xiaolinl@vmware.com> - 9.10.3-2
+- Add group named and user named
 
-*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.10.3-1
--   Updated to version 9.10.3
+* Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> - 9.10.3-1
+- Updated to version 9.10.3
 
-*   Tue Aug 11 2015 Divya Thaluru <dthaluru@vmware.com> 9.10.1-1
--   Fixing release
+* Tue Aug 11 2015 Divya Thaluru <dthaluru@vmware.com> - 9.10.1-1
+- Fixing release
 
-*   Tue Jan 20 2015 Divya Thaluru <dthaluru@vmware.com> 9.10.1-P1
--   Initial build. First version
+* Tue Jan 20 2015 Divya Thaluru <dthaluru@vmware.com> - 9.10.1-P1
+- Initial build. First version

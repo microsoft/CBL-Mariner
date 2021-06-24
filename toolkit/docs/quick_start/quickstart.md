@@ -67,7 +67,7 @@ Copy your binary image(s) to your VM Host Machine using your preferred technique
 **[Gen2/VHDX Only] Fix Boot Options**
 1. Right click your virtual machine from Hyper-V Manager
 1. Select _Settings..._.
-1. Select Security and disable _Enable Secure Boot_.
+1. Select Security and under _Template:_ select _Microsoft UEFI Certificate Authority_.
 1. Select the SCSI Controller from the Hardware panel.
 1. Select DVD Drive and press Add.
 
@@ -120,7 +120,7 @@ Copy your binary image(s) to your VM Host Machine using your preferred technique
 
 1. Right click your virtual machine from Hyper-V Manager
 1. Select _Settings..._
-1. Select Security and disable _Enable Secure Boot_.
+1. Select Security and under _Template:_ select _Microsoft UEFI Certificate Authority_.
 1. Select Firmware and adjust the boot order so DVD is first and Hard Drive is second.
 1. Select _Apply_ to apply all changes.
 

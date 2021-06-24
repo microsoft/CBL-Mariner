@@ -1,0 +1,12 @@
+diff -urN libnvidia-container-1.3.3-orig/mk/common.mk libnvidia-container-1.3.3/mk/common.mk
+--- libnvidia-container-1.3.3-orig/mk/common.mk	2021-02-05 05:26:41.000000000 -0800
++++ libnvidia-container-1.3.3/mk/common.mk	2021-04-16 23:53:31.110955932 -0700
+@@ -22,7 +22,7 @@
+ UID      := $(shell id -u)
+ GID      := $(shell id -g)
+ DATE     := $(shell date -u --iso-8601=minutes)
+-REVISION := $(shell git rev-parse HEAD)
++REVISION  = 0
+ COMPILER := $(realpath $(shell which $(CC)))
+ PLATFORM ?= $(shell uname -m)
+ 

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 
+	"microsoft.com/pkggen/imagegen/attendedinstaller/primitives/enumfield"
 	"microsoft.com/pkggen/imagegen/attendedinstaller/primitives/navigationbar"
 	"microsoft.com/pkggen/imagegen/attendedinstaller/uitext"
 	"microsoft.com/pkggen/imagegen/attendedinstaller/uiutils"
@@ -80,10 +81,10 @@ type ManualPartitionWidget struct {
 	addPartitionForm  *tview.Form
 	formFlex          *tview.Flex
 	formNavBar        *navigationbar.NavigationBar
-	formatInput       *tview.InputField
+	formatInput       *enumfield.EnumField
 	mountPointInput   *tview.InputField
 	nameInput         *tview.InputField
-	sizeUnitInput     *tview.InputField
+	sizeUnitInput     *enumfield.EnumField
 	sizeInput         *tview.InputField
 	formSpaceLeftText *tview.TextView
 
@@ -129,13 +130,34 @@ func (mp *ManualPartitionWidget) Initialize(backButtonText string, sysConfig *co
 	mp.addPartitionForm = tview.NewForm().
 		SetButtonsAlign(tview.AlignCenter)
 
+	// Calculate longest label size to align enum input fields
+	diskSizeLabelFull := fmt.Sprintf("%s %s", uitext.FormDiskSizeLabel, uitext.FormDiskSizeLabelMaxHelp)
+	var maxLabelWidth int
+	labels := []string{
+		uitext.FormDiskFormatLabel,
+		uitext.FormDiskSizeUnitLabel,
+		uitext.FormDiskNameLabel,
+		uitext.FormDiskMountPointLabel,
+		diskSizeLabelFull,
+	}
+	for _, label := range labels {
+		labelLen := len(label)
+		if labelLen > maxLabelWidth {
+			maxLabelWidth = labelLen
+		}
+	}
+
 	mp.formatInput = mp.enumInputBox(validPartitionFormats).
 		SetLabel(uitext.FormDiskFormatLabel).
-		SetFieldBackgroundColor(tcell.ColorWhite)
+		SetLabelWidth(maxLabelWidth).
+		SetFieldBackgroundColor(tcell.ColorWhite).
+		SetBackgroundColorActivated(tcell.ColorPurple)
 
 	mp.sizeUnitInput = mp.enumInputBox(validSizeUnits).
 		SetLabel(uitext.FormDiskSizeUnitLabel).
-		SetFieldBackgroundColor(tcell.ColorWhite)
+		SetLabelWidth(maxLabelWidth).
+		SetFieldBackgroundColor(tcell.ColorWhite).
+		SetBackgroundColorActivated(tcell.ColorPurple)
 
 	mp.nameInput = tview.NewInputField().
 		SetLabel(uitext.FormDiskNameLabel).
@@ -149,7 +171,7 @@ func (mp *ManualPartitionWidget) Initialize(backButtonText string, sysConfig *co
 		SetFieldBackgroundColor(tcell.ColorWhite)
 
 	mp.sizeInput = tview.NewInputField().
-		SetLabel(fmt.Sprintf("%s %s", uitext.FormDiskSizeLabel, uitext.FormDiskSizeLabelMaxHelp)).
+		SetLabel(diskSizeLabelFull).
 		SetAcceptanceFunc(mp.sizeInputValidation).
 		SetFieldBackgroundColor(tcell.ColorWhite)
 
@@ -660,38 +682,25 @@ func (mp *ManualPartitionWidget) onNextButton() {
 	}
 }
 
-// enumInputBox returns an input box that only allows values from elements to appear.
-func (mp *ManualPartitionWidget) enumInputBox(elements []string) *tview.InputField {
-	field := tview.NewInputField()
-	index := 0
-	// Initialize text with the first element
-	field.SetText(elements[index])
-
+// enumInputBox returns an input box that only allows values
+// from elements to appear and produces helpful error message for
+// every unhandled input
+func (mp *ManualPartitionWidget) enumInputBox(elements []string) *enumfield.EnumField {
+	field := enumfield.NewEnumField(elements)
+	// Add helpful message when user presses any key we do not process
 	field.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		key := event.Key()
-		// Override movement left/right. Leave navigation keys intact. Consume all other input.
 		switch key {
-		case tcell.KeyLeft:
-			if index == 0 {
-				index = len(elements)
-			}
-			index--
-		case tcell.KeyRight:
-			index++
-			if index == len(elements) {
-				index = 0
-			}
 		case tcell.KeyEnter, tcell.KeyEscape,
 			tcell.KeyDown, tcell.KeyTab,
-			tcell.KeyUp, tcell.KeyBacktab:
+			tcell.KeyUp, tcell.KeyBacktab,
+			tcell.KeyLeft, tcell.KeyRight:
 			// Navigation keys - pass
 			return event
 		default:
 			mp.formNavBar.SetUserFeedback(uitext.EnumNavigationFeedback, tview.Styles.TertiaryTextColor)
 			return nil
 		}
-		field.SetText(elements[index])
-		return nil
 	})
 	return field
 }

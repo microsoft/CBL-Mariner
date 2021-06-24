@@ -3,8 +3,8 @@
 %define uname_r %{version}-%{release}
 Summary:        Linux Kernel
 Name:           kernel
-Version:        5.10.28.1
-Release:        6%{?dist}
+Version:        5.10.42.1
+Release:        1%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -15,6 +15,7 @@ Source0:        kernel-%{version}.tar.gz
 Source1:        config
 Source2:        config_aarch64
 Source3:        sha512hmac-openssl.sh
+Source4:        cbl-mariner-ca-20210127.pem
 # Kernel CVEs are addressed by moving to a newer version of the stable kernel.
 # Since kernel CVEs are filed against the upstream kernel version and not the
 # stable kernel version, our automated tooling will still flag the CVE as not
@@ -158,6 +159,22 @@ Patch1129:      CVE-2021-29650.nopatch
 Patch1130:      CVE-2021-30002.nopatch
 # CVE-2021-29648 - Introducing commit not in stable tree. No fix necessary at this time.
 Patch1131:      CVE-2021-29648.nopatch
+Patch1132:      CVE-2021-23133.nopatch
+Patch1133:      CVE-2021-29154.nopatch
+# CVE-2021-30178 - Introducing commit not in stable tree. No fix necessary at this time.
+Patch1134:      CVE-2021-30178.nopatch
+Patch1135:      CVE-2021-23134.nopatch
+Patch1136:      CVE-2021-29155.nopatch
+Patch1137:      CVE-2021-31829.nopatch
+Patch1138:      CVE-2021-31916.nopatch
+Patch1139:      CVE-2021-32399.nopatch
+Patch1140:      CVE-2021-33033.nopatch
+Patch1141:      CVE-2021-33034.nopatch
+Patch1142:      CVE-2021-3483.nopatch
+Patch1143:      CVE-2021-3501.nopatch
+Patch1144:      CVE-2021-3506.nopatch
+Patch1145:      CVE-2020-25672.nopatch
+Patch1146:      CVE-2021-33200.nopatch
 BuildRequires:  audit-devel
 BuildRequires:  bash
 BuildRequires:  bc
@@ -172,6 +189,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  pam-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  python3
+BuildRequires:  sed
 BuildRequires:  xerces-c-devel
 Requires:       filesystem
 Requires:       kmod
@@ -292,6 +310,9 @@ if [ -s config_diff ]; then
     exit 1
 fi
 
+# Add CBL-Mariner cert into kernel's trusted keyring
+cp %{SOURCE4} certs/mariner.pem
+
 make VERBOSE=1 KBUILD_BUILD_VERSION="1" KBUILD_BUILD_HOST="CBL-Mariner" ARCH=${arch} %{?_smp_mflags}
 make -C tools perf
 
@@ -321,18 +342,6 @@ install -vdm 755 %{buildroot}%{_libdir}/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
-# Verify for build-id match
-# We observe different IDs sometimes
-# TODO: debug it
-ID1=`readelf -n vmlinux | grep "Build ID"`
-./scripts/extract-vmlinux arch/x86/boot/bzImage > extracted-vmlinux
-ID2=`readelf -n extracted-vmlinux | grep "Build ID"`
-if [ "$ID1" != "$ID2" ] ; then
-        echo "Build IDs do not match"
-        echo $ID1
-        echo $ID2
-        exit 1
-fi
 install -vm 600 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %endif
 
@@ -351,7 +360,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/lib/modules/%{uname_r}/vml
 
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-mariner_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta crashkernel=128M
+mariner_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta crashkernel=128M lockdown=integrity
 mariner_linux=vmlinuz-%{uname_r}
 mariner_initrd=initrd.img-%{uname_r}
 EOF
@@ -496,6 +505,22 @@ ln -sf linux-%{uname_r}.cfg /boot/mariner.cfg
 %endif
 
 %changelog
+* Mon Jun 21 2021 Thomas Crain <thcrain@microsoft.com> - 5.10.42.1-1
+- Merge the following releases from 1.0 to dev branch
+- rachelmenge@microsoft.com, 5.10.32.1-1: Update source to 5.10.32.1, Address CVE-2021-23133, CVE-2021-29154, CVE-2021-30178
+- rachelmenge@microsoft.com, 5.10.32.1-2: Add CONFIG_AS_HAS_LSE_ATOMICS=y
+- anphel@microsoft.com, 5.10.32.1-3: Update CONFIG_LD_VERSION for binutils 2.36.1, remove build-id match check
+- niontive@microsoft.com, 5.10.32.1-4: Bump release number to match kernel-signed update
+- dmihai@microsoft.com, 5.10.32.1-5: Enable kernel debugger
+- chrco@microsoft.com, 5.10.32.1-6: Add Mariner cert into the trusted kernel keyring
+- chrco@microsoft.com, 5.10.32.1-7: Set lockdown=integrity by default
+- rachelmenge@microsoft.com, 5.10.37.1-1: Update source to 5.10.37.1.
+-   Address CVE-2021-23134, CVE-2021-29155, CVE-2021-31829, CVE-2021-31916, 
+-   CVE-2021-32399, CVE-2021-33033, CVE-2021-33034, CVE-2021-3483,
+-   CVE-2021-3501, CVE-2021-3506.
+- rachelmenge@microsoft.com, 5.10.37.1-2: Address CVE-2020-25672 
+- rachelmenge@microsoft.com, 5.10.42.1-1: Update source to 5.10.42.1, Address CVE-2021-33200
+
 * Tue May 25 2021 Thomas Crain <thcrain@microsoft.com> - 5.10.28.1-6
 - Bump release number to match kernel-headers release
 

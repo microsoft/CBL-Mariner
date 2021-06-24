@@ -1,16 +1,14 @@
 Summary:        Provide tools to manage multipath devices
 Name:           device-mapper-multipath
-Version:        0.8.4
-Release:        3%{?dist}
+Version:        0.8.6
+Release:        1%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          System Environment/Base
 URL:            http://christophe.varoqui.free.fr/
-#Source0:       https://git.opensvc.com/?p=multipath-tools/.git;a=snapshot;h=refs/tags/%{version};sf=tgz"
+#Source0:       https://github.com/opensvc/multipath-tools/archive/refs/tags/%{version}.tar.gz
 Source0:        multipath-tools-%{version}.tar.gz
-Patch0:         libdmmp-jsonc.patch
-Patch1:         libmpathpersist.patch
 BuildRequires:  device-mapper-devel
 BuildRequires:  json-c-devel
 BuildRequires:  libaio-devel
@@ -47,8 +45,6 @@ It contains the libraries and header files to create applications
 
 %prep
 %setup -q -n multipath-tools-%{version}
-%patch0 -p1
-%patch1 -p1
 
 %build
 make %{?_smp_mflags}
@@ -102,42 +98,46 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+* Mon Jun 21 2021 Thomas Crain <thcrain@microsoft.com> - 0.8.6-1
+- Merge the following releases from 1.0 to dev branch
+- anphel@microsoft.com, 0.8.6-1: Update to version 0.8.6 for parallel build fix. Update Source0 URL.
+
 * Tue Nov 03 2020 Ruying Chen <v-ruyche@microsoft.com> - 0.8.4-3
 - Systemd supports merged /usr. Update with corresponding file locations and macros.
 
-*   Wed Jun 17 2020 Joe Schmitt <joschmit@microsoft.com> 0.8.4-2
--   Update Source0 URL.
--   Use release tag instead of commit.
+* Wed Jun 17 2020 Joe Schmitt <joschmit@microsoft.com> - 0.8.4-2
+- Update Source0 URL.
+- Use release tag instead of commit.
 
-*   Thu Jun 11 2020 Nicolas Ontiveros <niontive@microsoft.com> 0.8.4-1
--   Upgrade to version 0.8.4
+* Thu Jun 11 2020 Nicolas Ontiveros <niontive@microsoft.com> - 0.8.4-1
+- Upgrade to version 0.8.4
 
-*   Tue May 26 2020 Pawel Winogrodzki <pawelwi@microsoft.com> 0.8.0-2
--   Adding the "%%license" macro.
+* Tue May 26 2020 Pawel Winogrodzki <pawelwi@microsoft.com> - 0.8.0-2
+- Adding the "%%license" macro.
 
-*   Wed Mar 25 2020 Nicolas Ontiveros <niontive@microsoft.com> 0.8.0-1
--   Update version to 0.8.0. License verified.
+* Wed Mar 25 2020 Nicolas Ontiveros <niontive@microsoft.com> - 0.8.0-1
+- Update version to 0.8.0. License verified.
 
-*   Tue Sep 03 2019 Mateusz Malisz <mamalisz@microsoft.com> 0.7.3-4
--   Initial CBL-Mariner import from Photon (license: Apache2).
+* Tue Sep 03 2019 Mateusz Malisz <mamalisz@microsoft.com> - 0.7.3-4
+- Initial CBL-Mariner import from Photon (license: Apache2).
 
-*   Thu Dec 06 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.7.3-3
--   Make device-mapper a runtime dependency of kpartx.
+* Thu Dec 06 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> - 0.7.3-3
+- Make device-mapper a runtime dependency of kpartx.
 
-*   Wed Sep 26 2018 Anish Swaminathan <anishs@vmware.com>  0.7.3-2
--   Remove rados dependency
+* Wed Sep 26 2018 Anish Swaminathan <anishs@vmware.com> - 0.7.3-2
+- Remove rados dependency
 
-*   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.3-1
--   Update to 0.7.3
+* Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> - 0.7.3-1
+- Update to 0.7.3
 
-*   Tue May 9  2017 Bo Gan <ganb@vmware.com> 0.7.1-1
--   Update to 0.7.1
+* Tue May 9  2017 Bo Gan <ganb@vmware.com> - 0.7.1-1
+- Update to 0.7.1
 
-*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  0.5.0-3
--   Change systemd dependency
+* Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com> - 0.5.0-3
+- Change systemd dependency
 
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5.0-2
--   GA - Bump release of all rpms
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> - 0.5.0-2
+- GA - Bump release of all rpms
 
-*   Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 0.5.0-1
--   Initial build. First version
+* Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> - 0.5.0-1
+- Initial build. First version

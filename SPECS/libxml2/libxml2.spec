@@ -1,16 +1,13 @@
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.10
-Release:        8%{?dist}
+Version:        2.9.12
+Release:        1%{?dist}
 License:        MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          System Environment/General Libraries
 URL:            http://www.xmlsoft.org/
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
-Patch0:         CVE-2019-20388.patch
-Patch1:         CVE-2020-7595.patch
-Patch2:         CVE-2020-24977.patch
 BuildRequires:  python3-devel
 Provides:       pkgconfig(libxml-2.0) = %{version}-%{release}
 Provides:       %{name}-tools = %{version}-%{release}
@@ -92,6 +89,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+* Mon Jun 21 2021 Thomas Crain <thcrain@microsoft.com> - 2.9.12-1
+- Merge the following releases from 1.0 to the dev spec:
+- mamalisz@microsoft.com, 2.9.12-1: Update to version 2.9.12 to fix CVE-2021-3517, CVE-2021-3518 and CVE-2021-3537
+
 * Fri May 21 2021 Nick Samson <nisamson@microsoft.com> - 2.9.10-8
 - Added explicit requirement on python xml library
 - Remove requirement on python2

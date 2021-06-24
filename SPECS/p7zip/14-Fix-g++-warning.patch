@@ -1,0 +1,24 @@
+From: Robert Luberda <robert@debian.org>
+Date: Sun, 28 Jan 2018 22:19:13 +0100
+Subject: Fix g++ warning
+
+Fix for "use of an operand of type 'bool' in 'operator++'
+is deprecated [-Wdeprecated]" warning taken from 7zip 18.00.beta
+package.
+---
+ CPP/7zip/Archive/Wim/WimHandler.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CPP/7zip/Archive/Wim/WimHandler.cpp b/CPP/7zip/Archive/Wim/WimHandler.cpp
+index 27d3298..4ff5cfe 100644
+--- a/CPP/7zip/Archive/Wim/WimHandler.cpp
++++ b/CPP/7zip/Archive/Wim/WimHandler.cpp
+@@ -298,7 +298,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
+ 
+       AString res;
+ 
+-      bool numMethods = 0;
++      unsigned numMethods = 0;
+       for (unsigned i = 0; i < ARRAY_SIZE(k_Methods); i++)
+       {
+         if (methodMask & ((UInt32)1 << i))

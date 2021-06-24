@@ -1,0 +1,50 @@
+diff -ruN a/tests/run/generators_py35.py b/tests/run/generators_py35.py
+--- a/tests/run/generators_py35.py	1969-12-31 16:00:00.000000000 -0800
++++ b/tests/run/generators_py35.py	2021-04-30 00:40:03.333141340 -0700
+@@ -0,0 +1,24 @@
++# mode: run
++# tag: generators, pure3.5
++
++from __future__ import generator_stop
++
++# "generator_stop" was only added in Py3.5.
++
++
++def with_outer_raising(*args):
++    """
++    >>> x = with_outer_raising(1, 2, 3)
++    >>> try:
++    ...     list(x())
++    ... except RuntimeError:
++    ...     print("OK!")
++    ... else:
++    ...     print("NOT RAISED!")
++    OK!
++    """
++    def generator():
++        for i in args:
++            yield i
++        raise StopIteration
++    return generator
+\ No newline at end of file
+diff -ruN a/tests/run/generators_py.py b/tests/run/generators_py.py
+--- a/tests/run/generators_py.py	2021-04-30 00:38:33.905610251 -0700
++++ b/tests/run/generators_py.py	2021-04-30 00:40:43.292935879 -0700
+@@ -81,17 +81,6 @@
+             yield i
+     return generator
+ 
+-def with_outer_raising(*args):
+-    """
+-    >>> x = with_outer_raising(1, 2, 3)
+-    >>> list(x())
+-    [1, 2, 3]
+-    """
+-    def generator():
+-        for i in args:
+-            yield i
+-        raise StopIteration
+-    return generator
+ 
+ def test_close():
+     """

@@ -1,0 +1,9 @@
+[mariner-official-nvidia]
+name=CBL-Mariner Official Nvidia $releasever $basearch
+baseurl=https://packages.microsoft.com/cbl-mariner/$releasever/prod/NVIDIA/$basearch/rpms
+gpgkey=file:///etc/pki/rpm-gpg/MICROSOFT-RPM-GPG-KEY file:///etc/pki/rpm-gpg/MICROSOFT-METADATA-GPG-KEY
+gpgcheck=1
+repo_gpgcheck=1
+enabled=1
+skip_if_unavailable=True
+sslverify=1

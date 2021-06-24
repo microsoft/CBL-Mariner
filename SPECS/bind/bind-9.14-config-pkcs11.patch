@@ -29,9 +29,9 @@ diff --git a/configure.ac b/configure.ac
 index fde41dc..e5cc3cd 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -889,10 +889,14 @@ AS_CASE([$enable_native_pkcs11],
- AC_SUBST([PKCS11_TEST])
+@@ -935,10 +935,14 @@ AS_CASE([$enable_native_pkcs11],
  AC_SUBST([PKCS11_TOOLS])
+ AC_SUBST([PKCS11_MANS])
  
 +USE_PKCS11='-DUSE_PKCS11=0'
 +USE_OPENSSL='-DUSE_OPENSSL=0'
@@ -64,9 +64,9 @@ index 116e2d2..99bdf5b 100644
  #if USE_PKCS11
  #include <pk11/pk11.h>
  #include <pk11/site.h>
-@@ -98,11 +105,10 @@ struct dst_key {
+@@ -113,11 +120,10 @@ struct dst_key {
  		void *generic;
- 		gss_ctx_id_t gssctx;
+ 		dns_gss_ctx_id_t gssctx;
  		DH *dh;
 -#if USE_OPENSSL
 -		EVP_PKEY *pkey;

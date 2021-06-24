@@ -1,13 +1,13 @@
 Summary:        Linux API header files
 Name:           kernel-headers
-Version:        5.10.28.1
-Release:        6%{?dist}
+Version:        5.10.42.1
+Release:        1%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          System Environment/Kernel
 URL:            https://github.com/microsoft/CBL-Mariner-Linux-Kernel
-#Source0:       https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner/%{version}.tar.gz
+#Source0:       https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner/%%{version}.tar.gz
 Source0:        kernel-%{version}.tar.gz
 # Historical name shipped by other distros
 Provides:       glibc-kernheaders
@@ -37,6 +37,19 @@ cp -rv usr/include/* /%{buildroot}%{_includedir}
 %{_includedir}/*
 
 %changelog
+* Mon Jun 21 2021 Thomas Crain <thcrain@microsoft.com> - 5.10.42.1-1
+- Merge the following releases from 1.0 to dev branch
+- rachelmenge@microsoft.com, 5.10.32.1-1: Update source to 5.10.32.1
+- rachelmenge@microsoft.com, 5.10.32.1-2: Bump release number to match kernel release
+- anphel@microsoft.com, 5.10.32.1-3: Bump release number to match kernel release
+- niontive@microsoft.com, 5.10.32.1-4: Bump release number to match kernel-signed update
+- dmihai@microsoft.com, 5.10.32.1-5: Bump release number to match kernel release
+- chrco@microsoft.com, 5.10.32.1-6: Bump release number to match kernel release
+- chrco@microsoft.com, 5.10.32.1-7: Bump release number to match kernel release
+- rachelmenge@microsoft.com, 5.10.37.1-1: Update source to 5.10.37.1
+- rachelmenge@microsoft.com, 5.10.37.1-2: Bump release number to match kernel release
+- rachelmenge@microsoft.com, 5.10.42.1-1: Update source to 5.10.42.1
+
 * Tue May 25 2021 Thomas Crain <thcrain@microsoft.com> - 5.10.28.1-6
 - Add glibc-kernheaders provides to base package
 

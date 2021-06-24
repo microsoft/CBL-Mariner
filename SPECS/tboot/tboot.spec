@@ -1,18 +1,17 @@
-Summary:    Trusted pre-kernel module and tools.
-Name:       tboot
-Version:    1.9.7
-Release:    7%{?dist}
-License:    BSD
-URL:        https://sourceforge.net/projects/tboot/
-Group:      System Environment/Security
+Summary:        Trusted pre-kernel module and tools.
+Name:           tboot
+Version:        1.9.12
+Release:        1%{?dist}
+License:        BSD
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
-Source0:    http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-ExclusiveArch: x86_64
-BuildRequires: trousers-devel
-Requires:      libtspi
+Group:          System Environment/Security
+URL:            https://sourceforge.net/projects/tboot/
+Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+BuildRequires:  trousers-devel
+Requires:       libtspi
+ExclusiveArch:  x86_64
 
-Patch0:    no_error_packed_member.patch
 %description
 Trusted Boot (tboot) is an open source, pre- kernel/VMM module that uses
 Intel(R) Trusted Execution Technology (Intel(R) TXT) to perform a measured
@@ -20,10 +19,9 @@ and verified launch of an OS kernel/VMM.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
-CFLAGS="%{optflags}"
+CFLAGS="%{optflags} -Wno-error=implicit-fallthrough= "
 export CFLAGS
 make debug=y %{?_smp_mflags}
 
@@ -40,9 +38,10 @@ make debug=y DESTDIR=%{buildroot} install
 %exclude %{_sysconfdir}
 
 %changelog
-* Sat May 09 00:20:59 PST 2020 Nick Samson <nisamson@microsoft.com> - 1.9.7-7
-- Added %%license line automatically
-
+*   Tue May 11 2021 Andrew Phelps <anphel@microsoft.com> 1.9.12-1
+-   Update to version 1.9.12 for binutils 2.36.1 compatibility
+*   Sat May 09 2020 Nick Samson <nisamson@microsoft.com> 1.9.7-7
+-   Added %%license line automatically
 *   Mon May 04 2020 Emre Girgin <mrgirgin@microsoft.com> 1.9.7-6
 -   Replace BuildArch with ExclusiveArch
 *   Tue Mar 24 2020 Henry Beberman <henry.beberman@microsoft.com> 1.9.7-5

@@ -2,11 +2,11 @@
  "Signatures": {
   "LICENSE": "a382e75d3b80971ffb0c863fd8922da48564cfdf8dd30e5c918334a0b6521c05",
   "NOTICE": "cc96602ba377f696d7b92b09e67a4ae74d81985f6c22501acc41267e8aa5c302",
-  "golang-crypto-0848c9571904fcbcb24543358ca8b5a7dbfde875.tar.gz": "250b757fddd894b62ba13f6aaef4c955e966912de51cee0eddd2a36522c3abb7",
-  "golang-sys-669c56c373c468cbe0f0c12b7939832b26088d33.tar.gz": "df0a725a833f571b2f64fbec89e15b137d8656125a868c5aa232bb2905e6b5b7",
-  "logrus-v1.4.1.tar.gz": "aecd75cfc00edfc8d8bdb013d2cee2a5da686fce31c5cf2ae314ce4642c8e139",
-  "runc-v1.0.0-rc10.tar.xz": "c823307ce8695af05381c5c25a92daacd6219c674d8bebaa0e1bff801c2b1f24",
+  "golang-crypto-c07d793c2f9aacf728fe68cbd7acd73adbd04159.tar.gz": "b7e8935189ea46c67eedafe6a97aefbdc2bf71dd9097fb7ee8a2a8ebc7556e7e",
+  "golang-sys-b0526f3d87448f0401ea3f7f3a81aa9e6ab4804d.tar.gz": "23703a84893a1cb53d3efbb46143451431b95b78d29ef1e02132cd580bb3a445",
+  "logrus-v1.8.1.tar.gz": "e9492c08ac8f202b438ccfb992bf81b7860739cf8f2266958e0c574c7abfdd74",
+  "runc-v1.0.0-rc95.tar.gz": "aa99fc1f018e0882491b771a0bb7f6ffeda3668e9936a079a5b305441e8e85d3",
   "runtime-spec-v1.0.2.tar.gz": "0933a1ba6e418fe020993e80426107da8de3572f3f20b4cd1ef296de6e62bb61",
-  "urfave-cli-v1.22.4.tar.gz": "83d628fdd261accd4dc0b232bfc8ff06e734ec5137e134a8cee916693a8bb117"
+  "urfave-cli-v2.3.0.tar.gz": "b17376246f1477157daab86d4a1562d6b004f5be0d15dfc61ebd8bb129384e6b"
  }
 }

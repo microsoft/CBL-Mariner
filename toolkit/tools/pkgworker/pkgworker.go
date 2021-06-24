@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"gopkg.in/alecthomas/kingpin.v2"
 	"microsoft.com/pkggen/internal/exe"
@@ -102,6 +103,8 @@ func copySRPMToOutput(srpmFilePath, srpmOutputDirPath string) (err error) {
 
 func buildSRPMInChroot(chrootDir, rpmDirPath, workerTar, srpmFile, repoFile, rpmmacrosFile string, defines map[string]string, noCleanup, runCheck bool, packagesToInstall []string) (builtRPMs []string, err error) {
 	const (
+		buildHeartbeatTimeout = 30 * time.Minute
+
 		existingChrootDir = false
 		squashErrors      = false
 
@@ -111,7 +114,26 @@ func buildSRPMInChroot(chrootDir, rpmDirPath, workerTar, srpmFile, repoFile, rpm
 	)
 
 	srpmBaseName := filepath.Base(srpmFile)
-	logger.Log.Infof("Building (%s)", srpmBaseName)
+
+	quit := make(chan bool)
+	go func() {
+		logger.Log.Infof("Building (%s).", srpmBaseName)
+
+		for {
+			select {
+			case <-quit:
+				if err == nil {
+					logger.Log.Infof("Built (%s) -> %v.", srpmBaseName, builtRPMs)
+				}
+				return
+			case <-time.After(buildHeartbeatTimeout):
+				logger.Log.Infof("Heartbeat: still building (%s).", srpmBaseName)
+			}
+		}
+	}()
+	defer func() {
+		quit <- true
+	}()
 
 	// Create the chroot used to build the SRPM
 	chroot := safechroot.NewChroot(chrootDir, existingChrootDir)
@@ -136,18 +158,12 @@ func buildSRPMInChroot(chrootDir, rpmDirPath, workerTar, srpmFile, repoFile, rpm
 	err = chroot.Run(func() (err error) {
 		return buildRPMFromSRPMInChroot(srpmFileInChroot, runCheck, defines, packagesToInstall)
 	})
-
 	if err != nil {
 		return
 	}
 
 	rpmBuildOutputDir := filepath.Join(chroot.RootDir(), chrootRpmBuildRoot, rpmDirName)
 	builtRPMs, err = moveBuiltRPMs(rpmBuildOutputDir, rpmDirPath)
-	if err != nil {
-		return
-	}
-
-	logger.Log.Infof("Built (%s) -> %v", srpmBaseName, builtRPMs)
 
 	return
 }

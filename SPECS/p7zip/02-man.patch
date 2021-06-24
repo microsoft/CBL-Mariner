@@ -1,0 +1,22 @@
+--- p7zip_16.02/man1/7z.1.orig	2018-02-04 03:47:31.934553305 +0000
++++ p7zip_16.02/man1/7z.1	2018-02-04 03:54:22.504752021 +0000
+@@ -12,7 +12,7 @@
+ .SH DESCRIPTION
+ 7-Zip is a file archiver supporting 7z (that implements LZMA compression algorithm
+ featuring very high compression ratio), LZMA2, XZ, ZIP, Zip64, CAB,
+-RAR (if the non-free p7zip-rar package is installed), ARJ, GZIP, BZIP2, TAR, CPIO, RPM, ISO,
++RAR (it was removed due a non-free license), ARJ, GZIP, BZIP2, TAR, CPIO, RPM, ISO,
+ most filesystem images and DEB formats.
+ Compression ratio in the new 7z format is 30-50% better than ratio in ZIP format.
+ .PP
+--- p7zip_16.02/man1/7za.1.orig	2018-02-04 03:53:54.243463005 +0000
++++ p7zip_16.02/man1/7za.1	2018-02-04 03:55:12.645264785 +0000
+@@ -12,7 +12,7 @@
+ .SH DESCRIPTION
+ 7-Zip is a file archiver supporting 7z (that implements LZMA compression algorithm
+ featuring very high compression ratio), LZMA2, XZ, ZIP, Zip64, CAB,
+-RAR (if the non-free p7zip-rar package is installed), ARJ, GZIP, BZIP2, TAR, CPIO, RPM, ISO,
++RAR (it was removed due a non-free license), ARJ, GZIP, BZIP2, TAR, CPIO, RPM, ISO,
+ most filesystem images and DEB formats.
+ Compression ratio in the new 7z format is 30-50% better than ratio in ZIP format.
+ .PP

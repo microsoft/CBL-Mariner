@@ -1,0 +1,899 @@
+Join of 02-man.patch, 09-man-update.patch and 10-drop-fm-doc.patch from Debian
+diff -rup p7zip_16.02.orig/DOC/MANUAL/cmdline/index.htm p7zip_16.02/DOC/MANUAL/cmdline/index.htm
+--- p7zip_16.02.orig/DOC/MANUAL/cmdline/index.htm	2016-05-10 10:50:08.000000000 +0100
++++ p7zip_16.02/DOC/MANUAL/cmdline/index.htm	2018-02-04 03:32:41.200460969 +0000
+@@ -11,12 +11,12 @@
+ <H1>Command Line Version User's Guide</H1>
+ 
+ 
+-<P>7z.exe is the command line version of 7-Zip. 7z.exe uses 7z.dll
+-from the 7-Zip package. 7z.dll is used by the 7-Zip File Manager also.</LI>
++<P>7z is the command line version of 7-Zip. 7z uses 7z.so
++from the 7-Zip package.
+ 
+-<P>7za.exe (a = alone) is a standalone version of 7-Zip.
+-7za.exe supports only 7z, lzma, cab, zip, gzip, bzip2, Z and tar formats.
+-7za.exe doesn't use external modules.</LI>
++<P>7za (a = alone) is a standalone version of 7-Zip.
++7za supports only 7z, lzma, cab, zip, gzip, bzip2, Z and tar formats.
++7za doesn't use external modules.
+ 
+ <UL>
+   <LI><A href = "syntax.htm">Command Line syntax</A></LI>
+diff -rup p7zip_16.02.orig/DOC/MANUAL/cmdline/switches/sfx.htm p7zip_16.02/DOC/MANUAL/cmdline/switches/sfx.htm
+--- p7zip_16.02.orig/DOC/MANUAL/cmdline/switches/sfx.htm	2016-05-10 10:50:08.000000000 +0100
++++ p7zip_16.02/DOC/MANUAL/cmdline/switches/sfx.htm	2018-02-04 03:32:41.200460969 +0000
+@@ -22,7 +22,7 @@
+   <DT><A name="SFX_Module"></A>{SFX_Module}</DT>
+   <DD>
+     <P>Specifies the SFX module that will be combined with the archive.
+-       This module must be placed in the same directory as the 7z.exe.
++       This module must be placed in the same directory as the 7z.
+        If {SFX_Module} is not assigned, 7-Zip will use standard console 
+        SFX module 7zCon.sfx.</P>
+     <TABLE>
+diff -rup p7zip_16.02.orig/DOC/MANUAL/general/index.htm p7zip_16.02/DOC/MANUAL/general/index.htm
+--- p7zip_16.02.orig/DOC/MANUAL/general/index.htm	2016-05-10 10:50:08.000000000 +0100
++++ p7zip_16.02/DOC/MANUAL/general/index.htm	2018-02-04 03:32:41.200460969 +0000
+@@ -13,7 +13,6 @@
+ <h4>The main features of 7-Zip</h4>
+ 
+ <UL>
+-  <LI><A href = "../fm/index.htm">Powerful file manager</A></LI>
+   <LI><A href = "performance.htm">High compression ratio and high speed</A></LI>
+   <LI><A href = "formats.htm">Big number of supported archive formats</A></LI>
+   <LI><A href = "../cmdline/index.htm">Additional command line version</A></LI>
+@@ -21,7 +20,7 @@
+ 
+ <H4>See Also</H4>
+ <UL>
+-  <LI><A href = "license.htm">License for use and distribution</A></LI>
++  <LI><A href = "../../../copyright">License for use and distribution</A></LI>
+ </UL>
+ 
+ </BODY>
+diff -rup p7zip_16.02.orig/DOC/MANUAL/start.htm p7zip_16.02/DOC/MANUAL/start.htm
+--- p7zip_16.02.orig/DOC/MANUAL/start.htm	2016-05-21 09:53:28.000000000 +0100
++++ p7zip_16.02/DOC/MANUAL/start.htm	2018-02-04 03:32:41.201460979 +0000
+@@ -17,7 +17,6 @@
+ 
+ <UL>
+   <LI><A href = "general/index.htm">General information about 7-Zip</A></LI>
+-  <LI><A href = "fm/index.htm">User's Guide for 7-Zip File Manager</A></LI>
+   <LI><A href = "cmdline/index.htm">User's Guide for command line version</A></LI>
+ </UL>
+ 
+@@ -25,7 +24,7 @@
+ 
+ <UL>
+   <LI><A href = "general/faq.htm">Frequently Asked Questions (FAQ)</A></LI>
+-  <!-- <LI><A href = "general/license.htm">License for use and distribution</A></LI> -->
++  <!-- <LI><A href = "../../copyright">License for use and distribution</A></LI> -->
+ </UL>
+ 
+ <HR>
+diff -rup p7zip_16.02.orig/man1/7z.1 p7zip_16.02/man1/7z.1
+--- p7zip_16.02.orig/man1/7z.1	2007-09-21 19:53:12.000000000 +0100
++++ p7zip_16.02/man1/7z.1	2018-02-04 03:33:07.305726696 +0000
+@@ -1,97 +1,187 @@
+-.TH 7z 1 "September 1 2006" "Mohammed Adnene Trojette"
++.TH 7z 1 "March 6th, 2016" "7-Zip"
+ .SH NAME
+-7z \- A file archiver with highest compression ratio
++7z \- A file archiver with high compression ratio format
+ .SH SYNOPSIS
+ .B 7z
+-.BR [adeltux]
+-.BR [\-]
+-.BR [SWITCH]
+-.BR <ARCHIVE_NAME>
+-.BR <ARGUMENTS>...
++.B <command>
++.RB [ <switches> "... ]"
++.B <archive_name>
++.RB [ <file_names> "... ]"
++.RB [ <@listfiles> "... ]"
+ .PP
+ .SH DESCRIPTION
+-7-Zip is a file archiver with the highest compression ratio. The program supports 7z (that implements LZMA compression algorithm), ZIP, CAB, ARJ, GZIP, BZIP2, TAR, CPIO, RPM and DEB formats. Compression ratio in the new 7z format is 30-50% better than ratio in ZIP format.
+-.TP
+-7z uses plugins to handle archives.
++7-Zip is a file archiver supporting 7z (that implements LZMA compression algorithm
++featuring very high compression ratio), LZMA2, XZ, ZIP, Zip64, CAB,
++RAR (if the non-free p7zip-rar package is installed), ARJ, GZIP, BZIP2, TAR, CPIO, RPM, ISO,
++most filesystem images and DEB formats.
++Compression ratio in the new 7z format is 30-50% better than ratio in ZIP format.
+ .PP
+-.SH FUNCTION LETTERS
++.B 7z
++uses plugins to handle archives, so it might be slightly slower than
++.BR 7za (1)
++but can handle more archive formats.
++.SH COMMANDS
+ .TP
+ .B a
+-Add
++Add files to archive
++.TP
++.B b
++Benchmark
+ .TP
+ .B d
+-Delete
++Delete files from archive
+ .TP
+ .B e
+-Extract
++Extract files from archive (without using directory names)
++.TP
++.B h
++Calculate hash values for files
++.TP
++.B i
++Show information about supported formats
+ .TP
+ .B l
+-List
++List contents of archive
++.TP
++.B rn
++Rename files in archive
+ .TP
+ .B t
+-Test
++Test integrity of archive
+ .TP
+ .B u
+-Update
++Update files to archive
+ .TP
+ .B x
+-eXtract with full paths
++eXtract files with full paths
+ .PP
+ .SH SWITCHES
+ .TP
+-.B \-ai[r[\-|0]]{@listfile|!wildcard}
++.B \-\-
++Stop switches parsing
++.TP
++.B \-ai[r[-|0]]{@listfile|!wildcard}
+ Include archives
+ .TP
+-.B \-ax[r[\-|0]]{@listfile|!wildcard}
+-eXclude archives
++.B \-ax[r[-|0]]{@listfile|!wildcard}
++Exclude archives
++.TP
++.B \-ao{a|s|t|u}
++Set Overwrite mode
++.TP
++.B \-an
++Disable archive_name field
++.TP
++.B -bb[0-3]
++Set output log level
+ .TP
+ .B \-bd
+-Disable percentage indicator
++Disable progress indicator
++.TP
++.B \-bs{o|e|p}{0|1|2}
++Set output stream for output/error/progress line
++.TP
++.B \-bt
++Show execution time statistics
+ .TP
+ .B \-i[r[\-|0]]{@listfile|!wildcard}
+ Include filenames
+ .TP
+-.B \-l
+-don't store symlinks; store the files/directories they point to (CAUTION : the scanning stage can never end because of recursive symlinks like 'ln \-s .. ldir')
+-.TP
+ .B \-m{Parameters}
+-Set Compression Method (see {DEST_SHARE_DOC}/MANUAL/switches/method.htm for a list of methods)
+-.TP
+-.B \-mhe=on|off
+-7z format only : enables or disables archive header encryption (Default : off)
++Set Compression Method (see /usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/method.htm from the p7zip-full package for a list of methods)
+ .TP
+ .B \-o{Directory}
+ Set Output directory
+ .TP
+ .B \-p{Password}
+-Set Password
++Set Password (NOTE: this flag does not work with 7zr)
+ .TP
+ .B \-r[\-|0]
+ Recurse subdirectories (CAUTION: this flag does not do what you think, avoid using it)
+ .TP
++.B \-sa{a|e|s}
++Set archive name mode
++.TP
++.B \-scc{UTF\-8|WIN|DOS}
++Set charset for for console input/output
++.TP
++.B \-scs{UTF\-8|UTF\-16LE|UTF\-16BE|WIN|DOS|{id}}
++Set charset for list files
++.TP
++.B \-scrc[CRC32|CRC64|SHA1|SHA256|*]
++Set hash function for x, e, h commands
++.TP
++.B \-sdel
++Delete files after compression
++.TP
++.B \-seml[.]
++Send archive by email
++.TP
+ .B \-sfx[{name}]
+ Create SFX archive
+ .TP
+-.B \-si
+-Read data from StdIn (eg: tar cf \- directory | 7z a \-si directory.tar.7z)
++.B \-si[{name}]
++Read data from stdin (e.g. tar cf \- directory | 7z a \-si directory.tar.7z)
+ .TP
+-.B \-so
+-Write data to StdOut (eg: % echo foo | 7z a dummy \-tgzip \-si \-so > /dev/null)
++.B \-slp
++Set Large Pages mode
+ .TP
+ .B \-slt
+-Sets technical mode for l (list) command
++Show technical information for l (List) command
++.TP
++.B \-snh
++Store hard links as links
++.TP
++.B \-snl
++Store symbolic links as links
++.TP
++.B \-sni
++Store NT security information
++.TP
++.B \-sns[\-]
++Store NTFS alternate streams
++.TP
++.B \-sfx[{name}]
++Create SFX archive
++.TP
++.B \-so
++Write data to stdout (e.g. 7z x \-so directory.tar.7z | tar xf \-)
++.TP
++.B \-spd
++Disable wildcard matching for file names
++.TP
++.B \-spe
++Eliminate duplication of root folder for extract command
++.TP
++.B \-spf
++Use fully qualified file paths
++.TP
++.B \-ssc[\-]
++Set sensitive case mode
++.TP
++.B \-ssw
++Compress shared files
++.TP
++.B \-stl
++Set archive timestamp from the most recently modified file
++.TP
++.B \-stm{HexMask}
++Set CPU thread affinity mask (hexadecimal number)
++.TP
++.B \-stx{Type}
++Exclude archive type
+ .TP
+ .B \-t{Type}
+-Type of archive (7z, zip, gzip, bzip2 or tar. 7z format is default)
++Set type of archive
++.TP
++.B \-u[-][p#][q#][r#][x#][y#][z#][!newArchiveName]
++Update options
+ .TP
+ .B \-v{Size}[b|k|m|g]
+ Create volumes
+ .TP
+-.B \-u[\-][p#][q#][r#][x#][y#][z#][!newArchiveName]
+-Update options
+-.TP
+ .B \-w[path]
+-Set Working directory
++Set working directory. Empty path means a temporary directory
+ .TP
+ .B \-x[r[\-|0]]]{@listfile|!wildcard}
+ Exclude filenames
+@@ -105,7 +195,8 @@ Assume Yes on all queries
+ .IP 0
+ Normal (no errors or warnings detected)
+ .IP 1
+-Warning (Non fatal error(s)). For example, some files cannot be read during compressing. So they were not compressed
++Warning (Non fatal error(s)). For example, some files cannot be read during compressing,
++so they were not compressed
+ .IP 2
+ Fatal error
+ .IP 7
+@@ -120,13 +211,13 @@ DO NOT USE the 7-zip format for backup p
+ 
+ .LP
+ On Linux/Unix, in order to backup directories you must use tar :
+- \- to backup a directory  : tar cf \- directory | 7za a \-si directory.tar.7z
+- \- to restore your backup : 7za x \-so directory.tar.7z | tar xf \-
++ \- to backup a directory  : tar cf \- directory | 7z a \-si directory.tar.7z
++ \- to restore your backup : 7z x \-so directory.tar.7z | tar xf \-
+ 
+ If you want to send files and directories (not the owner of file)
+ to others Unix/MacOS/Windows users, you can use the 7-zip format.
+ 
+-  example : 7za a directory.7z  directory
++  example : 7z a directory.7z  directory
+ 
+ .LP
+ Do not use "\-r" because this flag does not do what you think.
+@@ -165,10 +256,15 @@ add all files from directory "dir1" to S
+ 7z a \-mhe=on \-pmy_password archive.7z a_directory
+ add all files from directory "a_directory" to the archive "archive.7z" (with data and header archive encryption on)
+ .SH "SEE ALSO"
+-7za(1), 7zr(1), bzip2(1), gzip(1), zip(1)
++.BR 7zr (1),
++.BR 7za (1),
++.BR p7zip (1),
++.BR bzip2 (1),
++.BR gzip (1),
++.BR zip(1),
+ .PP
+ .SH "HTML Documentation"
+-{DEST_SHARE_DOC}/MANUAL/index.htm
++/usr/share/doc/p7zip-full/DOC/MANUAL/start.htm
+ .SH AUTHOR
+ .TP
+-Written for Debian by Mohammed Adnene Trojette.
++Written for Debian by Mohammed Adnene Trojette. Updated by Robert Luberda.
+diff -rup p7zip_16.02.orig/man1/7za.1 p7zip_16.02/man1/7za.1
+--- p7zip_16.02.orig/man1/7za.1	2007-09-21 19:53:24.000000000 +0100
++++ p7zip_16.02/man1/7za.1	2018-02-04 03:33:07.305726696 +0000
+@@ -1,99 +1,190 @@
+-.TH 7za 1 "September 1 2006" "Mohammed Adnene Trojette"
++.TH 7za 1 "March 6th, 2016" "7-Zip"
+ .SH NAME
+-7za \- A file archiver with highest compression ratio
++7za \- A file archiver with high compression ratio format
+ .SH SYNOPSIS
+ .B 7za
+-.BR [adeltux]
+-.BR [-]
+-.BR [SWITCH]
+-.BR <ARCHIVE_NAME>
+-.BR <ARGUMENTS>...
++.B <command>
++.RB [ <switches> "... ]"
++.B <archive_name>
++.RB [ <file_names> "... ]"
++.RB [ <@listfiles> "... ]"
+ .PP
+ .SH DESCRIPTION
+-7-Zip is a file archiver with the highest compression ratio. The program supports 7z (that implements LZMA compression algorithm), ZIP, CAB, ARJ, GZIP, BZIP2, TAR, CPIO, RPM and DEB formats. Compression ratio in the new 7z format is 30-50% better than ratio in ZIP format.
+-.TP
+-7za is a stand-alone executable. 7za handles less archive formats than 7z, but does not need any others.
++7-Zip is a file archiver supporting 7z (that implements LZMA compression algorithm
++featuring very high compression ratio), LZMA2, XZ, ZIP, Zip64, CAB,
++RAR (if the non-free p7zip-rar package is installed), ARJ, GZIP, BZIP2, TAR, CPIO, RPM, ISO,
++most filesystem images and DEB formats.
++Compression ratio in the new 7z format is 30-50% better than ratio in ZIP format.
+ .PP
+-.SH FUNCTION LETTERS
++.B 7za
++is a stand-alone executable.
++.B 7za
++handles fewer archive formats than
++.BR 7z (1).
++.SH COMMANDS
+ .TP
+ .B a
+-Add
++Add files to archive
++.TP
++.B b
++Benchmark
+ .TP
+ .B d
+-Delete
++Delete files from archive
+ .TP
+ .B e
+-Extract
++Extract files from archive (without using directory names)
++.TP
++.B h
++Calculate hash values for files
++.TP
++.B i
++Show information about supported formats
+ .TP
+ .B l
+-List
++List contents of archive
++.TP
++.B rn
++Rename files in archive
+ .TP
+ .B t
+-Test
++Test integrity of archive
+ .TP
+ .B u
+-Update
++Update files to archive
+ .TP
+ .B x
+-eXtract with full paths
++eXtract files with full paths
+ .PP
+ .SH SWITCHES
+ .TP
++.B \-\-
++Stop switches parsing
++.TP
+ .B \-ai[r[-|0]]{@listfile|!wildcard}
+ Include archives
+ .TP
+ .B \-ax[r[-|0]]{@listfile|!wildcard}
+-eXclude archives
++Exclude archives
++.TP
++.B \-ao{a|s|t|u}
++Set Overwrite mode
++.TP
++.B \-an
++Disable archive_name field
++.TP
++.B -bb[0-3]
++Set output log level
+ .TP
+ .B \-bd
+-Disable percentage indicator
++Disable progress indicator
+ .TP
+-.B \-i[r[-|0]]{@listfile|!wildcard}
+-Include filenames
++.B \-bs{o|e|p}{0|1|2}
++Set output stream for output/error/progress line
+ .TP
+-.B \-l
+-don't store symlinks; store the files/directories they point to (CAUTION : the scanning stage can never end because of recursive symlinks like 'ln \-s .. ldir')
++.B \-bt
++Show execution time statistics
+ .TP
+-.B \-m{Parameters}
+-Set Compression Method (see {DEST_SHARE_DOC}/MANUAL/switches/method.htm for a list of methods)
++.B \-i[r[\-|0]]{@listfile|!wildcard}
++Include filenames
+ .TP
+-.B \-mhe=on|off
+-7z format only : enables or disables archive header encryption (Default : off)
++.B \-m{Parameters}
++Set Compression Method (see /usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/method.htm from the p7zip-full package for a list of methods)
+ .TP
+ .B \-o{Directory}
+ Set Output directory
+ .TP
+ .B \-p{Password}
+-Set Password
++Set Password (NOTE: this flag does not work with 7zr)
+ .TP
+-.B \-r[-|0]
++.B \-r[\-|0]
+ Recurse subdirectories (CAUTION: this flag does not do what you think, avoid using it)
+ .TP
++.B \-sa{a|e|s}
++Set archive name mode
++.TP
++.B \-scc{UTF\-8|WIN|DOS}
++Set charset for for console input/output
++.TP
++.B \-scs{UTF\-8|UTF\-16LE|UTF\-16BE|WIN|DOS|{id}}
++Set charset for list files
++.TP
++.B \-scrc[CRC32|CRC64|SHA1|SHA256|*]
++Set hash function for x, e, h commands
++.TP
++.B \-sdel
++Delete files after compression
++.TP
++.B \-seml[.]
++Send archive by email
++.TP
+ .B \-sfx[{name}]
+ Create SFX archive
+ .TP
+-.B \-si
+-Read data from StdIn (eg: tar cf \- directory | 7za a \-si directory.tar.7z)
++.B \-si[{name}]
++Read data from stdin (e.g. tar cf \- directory | 7za a \-si directory.tar.7z)
+ .TP
+-.B \-so
+-Write data to StdOut (eg: % echo foo | 7z a dummy \-tgzip \-si \-so > /dev/null)
++.B \-slp
++Set Large Pages mode
+ .TP
+ .B \-slt
+-Sets technical mode for l (list) command
++Show technical information for l (List) command
+ .TP
+-.B \-t{Type}
+-Type of archive (7z, zip, gzip, bzip2 or tar. 7z format is default)
++.B \-snh
++Store hard links as links
+ .TP
+-.B \-v{Size}[b|k|m|g]
+-Create volumes
++.B \-snl
++Store symbolic links as links
++.TP
++.B \-sni
++Store NT security information
++.TP
++.B \-sns[\-]
++Store NTFS alternate streams
++.TP
++.B \-sfx[{name}]
++Create SFX archive
++.TP
++.B \-so
++Write data to stdout (e.g. 7za x \-so directory.tar.7z | tar xf \-)
++.TP
++.B \-spd
++Disable wildcard matching for file names
++.TP
++.B \-spe
++Eliminate duplication of root folder for extract command
++.TP
++.B \-spf
++Use fully qualified file paths
++.TP
++.B \-ssc[\-]
++Set sensitive case mode
++.TP
++.B \-ssw
++Compress shared files
++.TP
++.B \-stl
++Set archive timestamp from the most recently modified file
++.TP
++.B \-stm{HexMask}
++Set CPU thread affinity mask (hexadecimal number)
++.TP
++.B \-stx{Type}
++Exclude archive type
++.TP
++.B \-t{Type}
++Set type of archive
+ .TP
+ .B \-u[-][p#][q#][r#][x#][y#][z#][!newArchiveName]
+ Update options
+ .TP
++.B \-v{Size}[b|k|m|g]
++Create volumes
++.TP
+ .B \-w[path]
+-Set Working directory
++Set working directory. Empty path means a temporary directory
+ .TP
+-.B \-x[r[-|0]]]{@listfile|!wildcard}
++.B \-x[r[\-|0]]]{@listfile|!wildcard}
+ Exclude filenames
+ .TP
+ .B \-y
+@@ -105,7 +196,8 @@ Assume Yes on all queries
+ .IP 0
+ Normal (no errors or warnings detected)
+ .IP 1
+-Warning (Non fatal error(s)). For example, some files cannot be read during compressing. So they were not compressed
++Warning (Non fatal error(s)). For example, some files cannot be read during compressing,
++so they were not compressed
+ .IP 2
+ Fatal error
+ .IP 7
+@@ -165,10 +257,15 @@ add all files from directory "dir1" to S
+ 7za a \-mhe=on \-pmy_password archive.7z a_directory
+ add all files from directory "a_directory" to the archive "archive.7z" (with data and header archive encryption on)
+ .SH "SEE ALSO"
+-7z(1), 7zr(1), bzip2(1), gzip(1), zip(1)
++.BR 7zr (1),
++.BR 7z (1),
++.BR p7zip (1),
++.BR bzip2 (1),
++.BR gzip (1),
++.BR zip(1),
+ .PP
+ .SH "HTML Documentation"
+-{DEST_SHARE_DOC}/MANUAL/index.htm
++/usr/share/doc/p7zip-full/DOC/MANUAL/start.htm
+ .SH AUTHOR
+ .TP
+-Written for Debian by Mohammed Adnene Trojette.
++Written for Debian by Mohammed Adnene Trojette. Updated by Robert Luberda.
+diff -rup p7zip_16.02.orig/man1/7zr.1 p7zip_16.02/man1/7zr.1
+--- p7zip_16.02.orig/man1/7zr.1	2007-09-21 19:53:34.000000000 +0100
++++ p7zip_16.02/man1/7zr.1	2018-02-04 03:33:07.305726696 +0000
+@@ -1,99 +1,192 @@
+-.TH 7zr 1 "September 1 2006" "Mohammed Adnene Trojette"
++.TH 7zr 1 "March 6th, 2016" "7-Zip"
+ .SH NAME
+-7zr \- A file archiver with highest compression ratio
++7zr \- A file archiver with high compression ratio format
+ .SH SYNOPSIS
+ .B 7zr
+-.BR [adeltux]
+-.BR [-]
+-.BR [SWITCH]
+-.BR <ARCHIVE_NAME>
+-.BR <ARGUMENTS>...
++.B <command>
++.RB [ <switches> "... ]"
++.B <archive_name>
++.RB [ <file_names> "... ]"
++.RB [ <@listfiles> "... ]"
+ .PP
+ .SH DESCRIPTION
+-7-Zip is a file archiver with the highest compression ratio. The program supports 7z (that implements LZMA compression algorithm), ZIP, CAB, ARJ, GZIP, BZIP2, TAR, CPIO, RPM and DEB formats. Compression ratio in the new 7z format is 30-50% better than ratio in ZIP format.
+-.TP
+-7zr is a stand-alone executable. 7zr handles less archive formats than 7z, but does not need any others. 7zr is a "light-version" of 7za that only handles 7z archives.
++7-Zip is a file archiver supporting 7z (that implements LZMA compression algorithm
++featuring very high compression ratio), LZMA2, XZ, ZIP, Zip64, CAB,
++RAR (if the non-free p7zip-rar package is installed), ARJ, GZIP, BZIP2, TAR, CPIO, RPM, ISO,
++most filesystem images and DEB formats.
++Compression ratio in the new 7z format is 30-50% better than ratio in ZIP format.
+ .PP
+-.SH FUNCTION LETTERS
++.B 7zr
++is a stand-alone executable.
++.B 7zr
++is a "light-version" of
++.BR 7za (1).
++.B 7zr
++handles password-less archives in the 7z, LZMA2, and XZ formats only.
++.SH COMMANDS
+ .TP
+ .B a
+-Add
++Add files to archive
++.TP
++.B b
++Benchmark
+ .TP
+ .B d
+-Delete
++Delete files from archive
+ .TP
+ .B e
+-Extract
++Extract files from archive (without using directory names)
++.TP
++.B h
++Calculate hash values for files
++.TP
++.B i
++Show information about supported formats
+ .TP
+ .B l
+-List
++List contents of archive
++.TP
++.B rn
++Rename files in archive
+ .TP
+ .B t
+-Test
++Test integrity of archive
+ .TP
+ .B u
+-Update
++Update files to archive
+ .TP
+ .B x
+-eXtract with full paths
++eXtract files with full paths
+ .PP
+ .SH SWITCHES
+ .TP
++.B \-\-
++Stop switches parsing
++.TP
+ .B \-ai[r[-|0]]{@listfile|!wildcard}
+ Include archives
+ .TP
+ .B \-ax[r[-|0]]{@listfile|!wildcard}
+-eXclude archives
++Exclude archives
++.TP
++.B \-ao{a|s|t|u}
++Set Overwrite mode
++.TP
++.B \-an
++Disable archive_name field
++.TP
++.B -bb[0-3]
++Set output log level
+ .TP
+ .B \-bd
+-Disable percentage indicator
++Disable progress indicator
+ .TP
+-.B \-i[r[-|0]]{@listfile|!wildcard}
+-Include filenames
++.B \-bs{o|e|p}{0|1|2}
++Set output stream for output/error/progress line
+ .TP
+-.B \-l
+-don't store symlinks; store the files/directories they point to (CAUTION : the scanning stage can never end because of recursive symlinks like 'ln \-s .. ldir')
++.B \-bt
++Show execution time statistics
+ .TP
+-.B \-m{Parameters}
+-Set Compression Method (see {DEST_SHARE_DOC}/MANUAL/switches/method.htm for a list of methods)
++.B \-i[r[\-|0]]{@listfile|!wildcard}
++Include filenames
+ .TP
+-.B \-mhe=on|off
+-7z format only : enables or disables archive header encryption (Default : off)
++.B \-m{Parameters}
++Set Compression Method (see /usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/method.htm from the p7zip-full package for a list of methods)
+ .TP
+ .B \-o{Directory}
+ Set Output directory
+ .TP
+-.B \-p{Password}
+-Set Password
+-.TP
+-.B \-r[-|0]
++.B \-r[\-|0]
+ Recurse subdirectories (CAUTION: this flag does not do what you think, avoid using it)
+ .TP
++.B \-sa{a|e|s}
++Set archive name mode
++.TP
++.B \-scc{UTF\-8|WIN|DOS}
++Set charset for for console input/output
++.TP
++.B \-scs{UTF\-8|UTF\-16LE|UTF\-16BE|WIN|DOS|{id}}
++Set charset for list files
++.TP
++.B \-scrc[CRC32|CRC64|SHA1|SHA256|*]
++Set hash function for x, e, h commands
++.TP
++.B \-sdel
++Delete files after compression
++.TP
++.B \-seml[.]
++Send archive by email
++.TP
+ .B \-sfx[{name}]
+ Create SFX archive
+ .TP
+-.B \-si
+-Read data from StdIn (eg: tar cf \- directory | 7zr a \-si directory.tar.7z)
++.B \-si[{name}]
++Read data from stdin (e.g. tar cf \- directory | 7zr a \-si directory.tar.7z)
+ .TP
+-.B \-so
+-Write data to StdOut (eg: 7zr x \-so directory.tar.7z | tar xf \-)
++.B \-slp
++Set Large Pages mode
+ .TP
+ .B \-slt
+-Sets technical mode for l (list) command
++Show technical information for l (List) command
+ .TP
+-.B \-v{Size}[b|k|m|g]
+-Create volumes
++.B \-snh
++Store hard links as links
++.TP
++.B \-snl
++Store symbolic links as links
++.TP
++.B \-sni
++Store NT security information
++.TP
++.B \-sns[\-]
++Store NTFS alternate streams
++.TP
++.B \-sfx[{name}]
++Create SFX archive
++.TP
++.B \-so
++Write data to stdout (e.g. 7zr x \-so directory.tar.7z | tar xf \-)
++.TP
++.B \-spd
++Disable wildcard matching for file names
++.TP
++.B \-spe
++Eliminate duplication of root folder for extract command
++.TP
++.B \-spf
++Use fully qualified file paths
++.TP
++.B \-ssc[\-]
++Set sensitive case mode
++.TP
++.B \-ssw
++Compress shared files
++.TP
++.B \-stl
++Set archive timestamp from the most recently modified file
++.TP
++.B \-stm{HexMask}
++Set CPU thread affinity mask (hexadecimal number)
++.TP
++.B \-stx{Type}
++Exclude archive type
++.TP
++.B \-t{Type}
++Set type of archive
+ .TP
+ .B \-u[-][p#][q#][r#][x#][y#][z#][!newArchiveName]
+ Update options
+ .TP
++.B \-v{Size}[b|k|m|g]
++Create volumes
++.TP
+ .B \-w[path]
+-Set Working directory
++Set working directory. Empty path means a temporary directory
+ .TP
+-.B \-x[r[-|0]]]{@listfile|!wildcard}
++.B \-x[r[\-|0]]]{@listfile|!wildcard}
+ Exclude filenames
+ .TP
+-.B \-y 
++.B \-y
+ Assume Yes on all queries
+ .PP
+ .SH DIAGNOSTICS
+@@ -102,7 +195,8 @@ Assume Yes on all queries
+ .IP 0
+ Normal (no errors or warnings detected)
+ .IP 1
+-Warning (Non fatal error(s)). For example, some files cannot be read during compressing. So they were not compressed
++Warning (Non fatal error(s)). For example, some files cannot be read during compressing,
++so they were not compressed
+ .IP 2
+ Fatal error
+ .IP 7
+@@ -117,8 +211,8 @@ DO NOT USE the 7-zip format for backup p
+ 
+ .LP
+ On Linux/Unix, in order to backup directories you must use tar :
+- \- to backup a directory  : tar cf - directory | 7zr a -si directory.tar.7z
+- \- to restore your backup : 7zr x -so directory.tar.7z | tar xf -
++ \- to backup a directory  : tar cf \- directory | 7zr a \-si directory.tar.7z
++ \- to restore your backup : 7zr x \-so directory.tar.7z | tar xf \-
+ 
+ If you want to send files and directories (not the owner of file)
+ to others Unix/MacOS/Windows users, you can use the 7-zip format.
+@@ -156,16 +250,16 @@ solid archive = on
+ .B
+ 7zr a \-sfx archive.exe dir1
+ add all files from directory "dir1" to SFX archive archive.exe (Remark : SFX archive MUST end with ".exe")
+-.SH EXAMPLE 3
+-.TP
+-.B
+-7zr a \-mhe=on \-pmy_password archive.7z a_directory
+-add all files from directory "a_directory" to the archive "archive.7z" (with data and header archive encryption on)
+ .SH "SEE ALSO"
+-7z(1), 7za(1), bzip2(1), gzip(1), zip(1)
++.BR 7za (1),
++.BR 7z (1),
++.BR p7zip (1),
++.BR bzip2 (1),
++.BR gzip (1),
++.BR zip(1),
+ .PP
+ .SH "HTML Documentation"
+-{DEST_SHARE_DOC}/MANUAL/index.htm
++/usr/share/doc/p7zip/DOC/MANUAL/start.htm (avabilable when the p7zip-full package is installed)
+ .SH AUTHOR
+ .TP
+-Written for Debian by Mohammed Adnene Trojette.
++Written for Debian by Mohammed Adnene Trojette. Updated by Robert Luberda.

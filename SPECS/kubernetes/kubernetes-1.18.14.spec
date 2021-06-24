@@ -10,17 +10,18 @@
 Summary:        Microsoft Kubernetes
 Name:           kubernetes
 Version:        1.18.14
-Release:        5%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          Microsoft Kubernetes
 URL:            https://mcr.microsoft.com/oss
-#Source0:       https://kubernetesartifacts.azureedge.net/kubernetes/v1.18.14-hotfix.20210428/binaries/kubernetes-node-linux-amd64.tar.gz
+#Source0:       https://kubernetesartifacts.azureedge.net/kubernetes/v1.18.14-hotfix.20210525/binaries/kubernetes-node-linux-amd64.tar.gz
 #               Note that only amd64 tarball exist which is OK since kubernetes is built from source
-Source0:        kubernetes-node-linux-amd64-%{version}-hotfix.20210428.tar.gz
+Source0:        kubernetes-node-linux-amd64-%{version}-hotfix.20210525.tar.gz
 Source1:        kubelet.service
-Source2:        golang-1.15-k8s-1.18-test.patch
+Source2:        version-file-%{version}.sh
+Source3:        golang-1.15-k8s-1.18-test.patch
 # CVE-2020-8565 Kubernetes doc on website recommend to not enable debug level logging in production (no patch available)
 Patch0:         CVE-2020-8565.nopatch
 # CVE-2020-8563 Only applies when using VSphere as cloud provider,
@@ -50,14 +51,14 @@ Microsoft Kubernetes %{version}.
 
 %package        client
 Summary:        Client utilities
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %description    client
 Client utilities for Microsoft Kubernetes %{version}.
 
 %package        kubeadm
 Summary:        Bootstrap utilities
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 Requires:       moby-cli
 
 %description    kubeadm
@@ -107,6 +108,10 @@ mkdir -p %{_builddir}/%{name}/src
 cd %{_builddir}/%{name}/src
 tar -xof %{_builddir}/%{name}/kubernetes-src.tar.gz
 
+# set version information using version file
+# (see k8s code: hack/lib/version.sh for more detail)
+export KUBE_GIT_VERSION_FILE=%{SOURCE2}
+
 # build host and container image related components
 components_to_build=%{host_components}
 for component in ${components_to_build}; do
@@ -131,7 +136,7 @@ popd
 %check
 # patch test script so it supports golang 1.15 which is now used to build kubernetes
 cd %{_builddir}/%{name}/src/hack/make-rules
-patch -p1 test.sh < %{SOURCE2}
+patch -p1 test.sh < %{SOURCE3}
 
 # perform unit tests
 # Note:
@@ -180,7 +185,7 @@ done
 install -p -m 755 -t %{buildroot}%{_bindir} %{name}/node/bin/pause
 
 # install service files
-install -d -m 0755 %{buildroot}%{_libdir}/systemd/system
+install -d -m 0755 %{buildroot}/%{_libdir}/systemd/system
 install -p -m 644 -t %{buildroot}%{_libdir}/systemd/system %{SOURCE1}
 
 # install config files
@@ -191,8 +196,8 @@ install -d -m 644 %{buildroot}%{_sysconfdir}/kubernetes/manifests
 install -dm755 %{buildroot}%{_sharedstatedir}/kubelet
 install -dm755 %{buildroot}%{_var}/run/kubernetes
 
-install -d -m 0755 %{buildroot}%{_libdir}/tmpfiles.d
-cat << EOF >> %{buildroot}%{_libdir}/tmpfiles.d/kubernetes.conf
+install -d -m 0755 %{buildroot}/%{_libdir}/tmpfiles.d
+cat << EOF >> %{buildroot}/%{_libdir}/tmpfiles.d/kubernetes.conf
 d %{_var}/run/kubernetes 0755 kube kube -
 EOF
 
@@ -270,8 +275,17 @@ fi
 %{_bindir}/pause
 
 %changelog
-* Mon May 03 2021 Thomas Crain <thcrain@microsoft.com> - 1.18.14-5
-- Replace incorrect %%{_lib} usage with %%{_libdir}
+* Wed May 26 2021 Nicolas Guibourge <nicolasg@microsoft.com> 1.18.14-8
+- Update to version  "1.18.14-hotfix.20210525".
+
+* Tue May 17 2021 Nicolas Guibourge <nicolasg@microsoft.com> 1.18.14-7
+- Manually set version variables.
+
+* Thu May 13 2021 CBL-Mariner Service Account <cblmargh@microsoft.com> - 1.18.14-6
+- Update to version  "1.18.14-hotfix.20210511".
+
+* Mon May 03 2021 Nicolas Guibourge <nicolasg@microsoft.com> 1.18.14-5
+- Increment release to force republishing using golang 1.15.11.
 
 * Thu Apr 29 2021 CBL-Mariner Service Account <cblmargh@microsoft.com> - 1.18.14-4
 - Update to version  "1.18.14-hotfix.20210428".

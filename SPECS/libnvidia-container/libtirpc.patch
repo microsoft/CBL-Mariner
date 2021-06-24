@@ -1,0 +1,13 @@
+diff -urN libnvidia-container-1.3.3.orig/Makefile libnvidia-container-1.3.3/Makefile
+--- libnvidia-container-1.3.3.orig/Makefile	2021-02-05 05:26:41.000000000 -0800
++++ libnvidia-container-1.3.3/Makefile	2021-04-18 13:32:26.857212545 -0700
+@@ -133,6 +133,9 @@
+ LIB_CPPFLAGS       += -isystem $(DEPS_DIR)$(includedir)/tirpc -DWITH_TIRPC
+ LIB_LDLIBS_STATIC  += -l:libtirpc.a
+ LIB_LDLIBS_SHARED  += -lpthread
++else
++CPPFLAGS           += -I/usr/include/tirpc
++LIB_LDLIBS_SHARED  += -lpthread -ltirpc
+ endif
+ ifeq ($(WITH_SECCOMP), yes)
+ LIB_CPPFLAGS       += -DWITH_SECCOMP $(shell pkg-config --cflags libseccomp)

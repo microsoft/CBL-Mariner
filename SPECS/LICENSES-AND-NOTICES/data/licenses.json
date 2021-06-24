@@ -10,7 +10,7 @@
             "origin": "Fedora",
             "license": "[Fedora MIT License Declaration](https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing#License_of_Fedora_SPEC_Files)",
             "specs": [
-                "ant-contrib",
+                "archivemount",
                 "at",
                 "atf",
                 "attr",
@@ -36,6 +36,7 @@
                 "ebtables",
                 "extra-cmake-modules",
                 "fribidi",
+                "fuse-zip",
                 "gnu-efi",
                 "hardening-check",
                 "heimdal",
@@ -65,10 +66,12 @@
                 "libpwquality",
                 "libstoragemgmt",
                 "libxcrypt",
+                "libzip",
                 "mokutil",
                 "mozjs60",
                 "open-vm-tools",
                 "openssl",
+                "p7zip",
                 "p11-kit",
                 "perl-JSON",
                 "pkgconf",
@@ -77,6 +80,8 @@
                 "python-google-auth",
                 "python-jwt",
                 "python-kubernetes",
+                "python-pexpect",
+                "python-ptyprocess",
                 "python-pywbem",
                 "qt5-qtbase",
                 "qt5-qtdeclarative",
@@ -85,6 +90,7 @@
                 "qt5-rpm-macros",
                 "rdma-core",
                 "sgml-common",
+                "sos",
                 "squashfs-tools",
                 "uclibc-ng",
                 "uuid",
@@ -736,7 +742,10 @@
             "origin": "Nvidia",
             "license": "[ASL 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)",
             "specs": [
-                "nvidia-container-runtime"
+                "libnvidia-container",
+                "nvidia-container-runtime",
+                "nvidia-container-toolkit",
+                "nvidia-docker2"
             ]
         },
         {

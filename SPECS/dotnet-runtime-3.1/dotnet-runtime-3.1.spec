@@ -1,13 +1,13 @@
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime-3.1
-Version:        3.1.5
-Release:        2%{?dist}
+Version:        3.1.15
+Release:        1%{?dist}
 License:        MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          Development/Tools
 URL:            https://github.com/dotnet/core
-Source0:        https://download.visualstudio.microsoft.com/download/pr/d00eaeea-6d7b-4e73-9d96-c0234ed3b665/0d25d9d1aeaebdeef01d15370d5cd22b/dotnet-runtime-3.1.5-linux-x64.tar.gz
+Source0:        https://download.visualstudio.microsoft.com/download/pr/692284f9-e1e7-4b31-9191-cd8043441024/ac45c17d4327b1f992b7fe3956a99129/dotnet-runtime-3.1.15-linux-x64.tar.gz
 Requires:       glibc
 Requires:       icu
 Requires:       krb5
@@ -48,8 +48,14 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 %{_libdir}/*
 
 %changelog
-* Thu Nov 12 2020 Henry Beberman <henry.beberman@microsoft.com> - 3.1.5-2
-- Fix scriptlets and move licenses to the correct folder
+*   Wed May 12 2021 Andrew Phelps <anphel@microsoft.com> 3.1.15-1
+-   Update version to 3.1.15
+
+*   Fri May 7 2021 Nicolas Guibourge <nicolasg@microsoft.com> 3.1.14-1
+-   Update version to 3.1.14
+
+*   Thu Nov 12 2020 Henry Beberman <henry.beberman@microsoft.com> 3.1.5-2
+-   Fix scriptlets and move licenses to the correct folder
 
 *   Fri Jun 19 2020 Andrew Phelps <anphel@microsoft.com> 3.1.5-1
 -   Update version to 3.1.5. Fix runtime requirements.

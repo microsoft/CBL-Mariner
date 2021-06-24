@@ -1,0 +1,32 @@
+From f6b40614e4a8131394792d590965f8af3c635323 Mon Sep 17 00:00:00 2001
+From: nnposter <nnposter@e0a8ed71-7df4-0310-8962-fdc924857419>
+Date: Fri, 16 Oct 2020 02:54:52 +0000
+Subject: [PATCH] Fix a Unix domain socket crash. Fixes #2154
+
+---
+ CHANGELOG        | 2 ++
+ ncat/ncat_main.c | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/ncat/ncat_main.c b/ncat/ncat_main.c
+index 8942d83cb9..2792a6ac24 100644
+--- a/ncat/ncat_main.c
++++ b/ncat/ncat_main.c
+@@ -846,7 +846,7 @@ int main(int argc, char *argv[])
+             targetaddrs->addr.un.sun_family = AF_UNIX;
+             strncpy(targetaddrs->addr.un.sun_path, argv[optind], sizeof(targetaddrs->addr.un.sun_path));
+             targetaddrs->addrlen = SUN_LEN(&targetaddrs->addr.un);
+-            o.target = argv[optind];
++            o.sslservername = o.target = argv[optind];
+             optind++;
+         } else
+ #endif
+@@ -865,7 +865,7 @@ int main(int argc, char *argv[])
+                 targetaddrs->addr.vm.svm_cid = long_cid;
+ 
+                 targetaddrs->addrlen = sizeof(targetaddrs->addr.vm);
+-                o.target = argv[optind];
++                o.sslservername = o.target = argv[optind];
+                 optind++;
+             }
+         } else

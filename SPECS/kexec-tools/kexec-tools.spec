@@ -1,15 +1,17 @@
-%global eppic_ver d84c3541035d95077aa8571f5d5c3e07c6ef510b
+%global eppic_ver e8844d3793471163ae4a56d8f95897be9e5bd554
 # First 7 digits from ^
-%global eppic_shortver d84c354
+%global eppic_shortver e8844d3
 %global mkdf_ver 1.6.8
 
+Summary:        The kexec/kdump userspace component
 Name:           kexec-tools
 Version:        2.0.21
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
-Summary:        The kexec/kdump userspace component
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
+Group:          Development/Tools
+URL:            https://github.com/horms/kexec-tools
 
 Source0: http://kernel.org/pub/linux/utils/kernel/kexec/%{name}-%{version}.tar.xz
 Source1: kdumpctl
@@ -322,6 +324,11 @@ done
 /usr/share/makedumpfile/
 
 %changelog
+* Mon Jun 07 2021 Chris Co <chrco@microsoft.com> - 2.0.21-3
+- Always use -s option in kdumpctl to use kexec file load by default
+* Tue May 11 2021 Andrew Phelps <anphel@microsoft.com> 2.0.21-2
+- Update eppic version for compatibility with binutils 2.36.1
+- Add Group and URL
 * Tue Feb 23 2021 Andrew Phelps <anphel@microsoft.com> 2.0.21-1
 - Update version to 2.0.21
 - Add patches for makedumpfile to support new printk in 5.10 kernel

@@ -1,6 +1,6 @@
 {
  "Signatures": {
-  "bind-9.16.3.tar.xz": "27ac6513de5f8d0db34b9f241da53baa15a14b2ad21338d0cde0826eaf564f7e",
+  "bind-9.16.15.tar.xz": "98b6f432d878a7bf8f57eb7b3c28be27278cf6b9989154bfe6c81104b38e7839",
   "generate-rndc-key.sh": "da0964516a9abe4074e262a1d0b7f63e63b2150c4cc2dddaaca029010383c422",
   "named-chroot.files": "5dbc7bd2a21836fb86cb740a2d4d72eb9f2b4f341996cd0c8ae9c39e95c0d76c",
   "named.conf.sample": "1807f11df688de4eb8cdcc97bd1a8863d81b03b1f24af96f3639de40bc8e538a",
