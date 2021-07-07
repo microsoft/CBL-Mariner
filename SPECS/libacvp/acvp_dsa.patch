@@ -1,0 +1,29 @@
+--- a/src/acvp_dsa.c	2021-02-19 05:30:47.000000000 -0800
++++ b/src/acvp_dsa.c	2021-06-14 12:27:24.623216569 -0700
+@@ -306,6 +306,17 @@
+         }
+         break;
+     case ACVP_DSA_UNVERIFIABLE:
++        rv = acvp_hexstr_to_bin(p, stc->p, ACVP_DSA_MAX_STRING, &(stc->p_len));
++        if (rv != ACVP_SUCCESS) {
++            ACVP_LOG_ERR("Hex conversion failure (p)");
++            return rv;
++        }
++        rv = acvp_hexstr_to_bin(q, stc->q, ACVP_DSA_MAX_STRING, &(stc->q_len));
++        if (rv != ACVP_SUCCESS) {
++            ACVP_LOG_ERR("Hex conversion failure (q)");
++            return rv;
++        }
++        break;
+     case ACVP_DSA_PROBABLE:
+     case ACVP_DSA_PROVABLE:
+         break;
+@@ -1163,6 +1174,8 @@
+             int diff = 0;
+             strcmp_s("canonical", 9, gmode, &diff);
+             if (!diff) gpq = ACVP_DSA_CANONICAL;
++            strcmp_s("unverifiable", 12, gmode, &diff);
++            if (!diff) gpq = ACVP_DSA_UNVERIFIABLE;
+         }
+         if (pqmode) {
+             int diff = 0;

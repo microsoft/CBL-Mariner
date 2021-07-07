@@ -1,0 +1,10 @@
+--- a/app/app_fips_lcl.h	2021-02-19 05:30:47.000000000 -0800
++++ b/app/app_fips_lcl.h	2021-03-17 06:59:39.406522484 -0700
+@@ -116,7 +116,6 @@
+ #include <openssl/fips.h>
+ #endif
+ 
+-#include <openssl/fipssyms.h>
+ #include <openssl/fips_rand.h>
+ 
+ #if OPENSSL_VERSION_NUMBER <= 0x10100000L

@@ -1,0 +1,52 @@
+--- a/src/acvp.c	2021-02-19 05:30:47.000000000 -0800
++++ b/src/acvp.c	2021-06-29 11:17:54.776937906 -0700
+@@ -970,7 +970,6 @@
+         strcpy_s(ctx->session_url, ACVP_ATTR_URL_MAX + 1, test_session_url);
+     } else {
+         ACVP_LOG_WARN("Missing session URL, results will not be POSTed to server");
+-        goto end;
+     }
+ 
+     jwt = json_object_get_string(obj, "jwt");
+@@ -979,7 +978,6 @@
+         strcpy_s(ctx->jwt_token, ACVP_JWT_TOKEN_MAX + 1, jwt);
+     } else {
+         ACVP_LOG_WARN("Missing JWT, results will not be POSTed to server");
+-        goto end;
+     }
+ 
+     isSample = json_object_get_boolean(obj, "isSample");
+@@ -996,7 +994,6 @@
+ 
+         if (!vsid_url) {
+             ACVP_LOG_WARN("No vsId URL, results will not be POSTed to server");
+-            goto end;
+         }
+ 
+         rv = acvp_append_vsid_url(ctx, vsid_url);
+@@ -1011,15 +1008,7 @@
+         goto end;
+     }
+ 
+-    vs_entry = ctx->vsid_url_list;
+-    if (!vs_entry) {
+-        goto end;
+-    }
+-
+     while (obj) {
+-        if (!vs_entry) {
+-            goto end;
+-        }
+         /* Process the kat vector(s) */
+         rv  = acvp_dispatch_vector_set(ctx, obj);
+         if (rv != ACVP_SUCCESS) {
+@@ -1066,6 +1055,9 @@
+         file_val = NULL;
+         n++;
+         obj = json_array_get_object(reg_array, n);
++        if (!vs_entry) {
++            goto end;
++        }
+         vs_entry = vs_entry->next;
+     }
+     /* append the final ']' to make the JSON work */ 

@@ -1,0 +1,32 @@
+--- a/app/app_fips_init_lcl.h
++++ b/app/app_fips_init_lcl.h
+@@ -128,11 +128,6 @@
+     {
+     DRBG_CTX *ctx;
+     size_t i;
+-#if FIPS_MODULE_VERSION_NUMBER >= 0x70000002L
+-    FIPS_set_error_callbacks(put_err_cb, add_err_cb, NULL, NULL, NULL, NULL);
+-#else
+-    FIPS_set_error_callbacks(put_err_cb, add_err_cb);
+-#endif
+     for (i = 0; i < sizeof(dummy_entropy); i++)
+         dummy_entropy[i] = i & 0xff;
+     if (entropy_stick)
+@@ -142,17 +137,6 @@
+     FIPS_drbg_set_callbacks(ctx, dummy_cb, 0, 16, dummy_cb, 0);
+     FIPS_drbg_instantiate(ctx, dummy_entropy, 10);
+     FIPS_rand_set_method(FIPS_drbg_method());
+-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+-    FIPS_set_locking_callbacks(&fips_test_suite_dummy_new_lock,
+-                               NULL,
+-                               NULL,
+-                               NULL,
+-                               &fips_test_suite_dummy_free_lock,
+-                               NULL,
+-                               NULL,
+-                               NULL);
+-#endif
+-
+     }
+ #endif
+ #ifdef __cplusplus

@@ -1,0 +1,132 @@
+--- a/app/app_kas.c
++++ b/app/app_kas.c
+@@ -39,7 +39,7 @@
+         == NID_X9_62_prime_field) {
+         rv = EC_POINT_set_affine_coordinates_GFp(group, peer, x, y, c);
+     } else {
+-        rv = EC_POINT_set_affine_coordinates_GF2m(group, peer, x, y, c);
++        rv = EC_POINT_set_affine_coordinates(group, peer, x, y, c);
+     }
+ #endif
+ 
+@@ -80,7 +80,7 @@
+     if (EC_METHOD_get_field_type(meth) == NID_X9_62_prime_field) {
+         rv = EC_POINT_get_affine_coordinates_GFp(grp, pt, tx, ty, ctx);
+     } else {
+-        rv = EC_POINT_get_affine_coordinates_GF2m(grp, pt, tx, ty, ctx);
++        rv = EC_POINT_get_affine_coordinates(grp, pt, tx, ty, ctx);
+     }
+ 
+     if (tc->test_type == ACVP_KAS_ECC_TT_AFT) {
+@@ -204,8 +204,8 @@
+         goto error;
+     }
+ 
+-    cx = FIPS_bn_new();
+-    cy = FIPS_bn_new();
++    cx = BN_new();
++    cy = BN_new();
+     if (!cx || !cy) {
+         printf("BN_new failed psx psy\n");
+         goto error;
+@@ -223,9 +223,9 @@
+             printf("missing required pix, piy, or d from kas ecc\n");
+             goto error;
+         }
+-        ix = FIPS_bn_new();
+-        iy = FIPS_bn_new();
+-        id = FIPS_bn_new();
++        ix = BN_new();
++        iy = BN_new();
++        id = BN_new();
+         if (!ix || !iy || !id) {
+             printf("BN_new failed pix piy d");
+             goto error;
+@@ -265,7 +265,7 @@
+         tc->zlen = Zlen;
+     }
+     if (tc->mode == ACVP_KAS_ECC_MODE_COMPONENT) {
+-        FIPS_digest(Z, Zlen, (unsigned char *)tc->chash, NULL, md);
++        EVP_Digest(Z, Zlen, (unsigned char *)tc->chash, NULL, md, NULL);
+         tc->chashlen = EVP_MD_size(md);
+     }
+     rv = 0;
+@@ -273,7 +273,7 @@
+ error:
+     if (Z) {
+         OPENSSL_cleanse(Z, Zlen);
+-        FIPS_free(Z);
++        OPENSSL_free(Z);
+     }
+     if (ec) EC_KEY_free(ec);
+     if (peerkey) EC_POINT_free(peerkey);
+@@ -678,13 +678,13 @@
+ 
+     Zlen = DH_compute_key_padded(Z, peerkey, dh);
+     if (Zlen <= 0) {
+-        FIPS_free(Z);
++        OPENSSL_free(Z);
+         Z = NULL;
+         printf("DH_compute_key_padded failed\n");
+         goto error;
+     }
+ 
+-    FIPS_digest(Z, Zlen, (unsigned char *)tc->chash, NULL, md);
++    EVP_Digest(Z, Zlen, (unsigned char *)tc->chash, NULL, md, NULL);
+     tc->chashlen = EVP_MD_size(md);
+ 
+     if (tc->test_type == ACVP_KAS_FFC_TT_AFT) {
+@@ -704,7 +704,7 @@
+ error:
+     if (Z) {
+         OPENSSL_cleanse(Z, Zlen);
+-        FIPS_free(Z);
++        OPENSSL_free(Z);
+     }
+     if (peerkey) BN_clear_free(peerkey);
+     if (dh) DH_free(dh);
+@@ -843,7 +843,7 @@
+              */
+             tc->n[0] -= 8;
+             tc->pt_len = RSA_public_encrypt(tc->nlen, tc->n, tc->pt, rsa, RSA_NO_PADDING);
+-            FIPS_digest(tc->n, tc->nlen, (unsigned char *)tc->chash, NULL, md);
++            EVP_Digest(tc->n, tc->nlen, (unsigned char *)tc->chash, NULL, md, NULL);
+             tc->chashlen = EVP_MD_size(md);
+         } else {
+             if (!tc->ct || !tc->pt || !tc->chash) {
+@@ -856,7 +856,7 @@
+                 printf("Error decrypting\n");
+                 goto err;
+             }
+-            FIPS_digest(tc->pt, tc->pt_len, (unsigned char *)tc->chash, NULL, md);
++            EVP_Digest(tc->pt, tc->pt_len, (unsigned char *)tc->chash, NULL, md, NULL);
+             tc->chashlen = EVP_MD_size(md);
+         }
+     } else {
+@@ -866,7 +866,7 @@
+                 goto err;
+             }
+             tc->pt_len = RSA_public_encrypt(tc->zlen, tc->z, tc->pt, rsa, RSA_NO_PADDING);
+-            FIPS_digest(tc->z, tc->zlen, (unsigned char *)tc->chash, NULL, md);
++            EVP_Digest(tc->z, tc->zlen, (unsigned char *)tc->chash, NULL, md, NULL);
+             tc->chashlen = EVP_MD_size(md);
+         } else {
+             if (!tc->ct || !tc->pt || !tc->chash) {
+@@ -878,7 +878,7 @@
+                 printf("Error decrypting\n");
+                 goto err;
+             }
+-            FIPS_digest(tc->pt, tc->pt_len, (unsigned char *)tc->chash, NULL, md);
++            EVP_Digest(tc->pt, tc->pt_len, (unsigned char *)tc->chash, NULL, md, NULL);
+             tc->chashlen = EVP_MD_size(md);
+         }
+     }
+@@ -994,7 +994,7 @@
+     }
+ 
+     if (tc->cipher == ACVP_SAFE_PRIMES_KEYGEN) {
+-        if (!FIPS_dh_generate_key(dh)) {
++        if (!DH_generate_key(dh)) {
+             printf("DH_generate_key failed for dgm = %d\n", tc->dgm);
+             goto err;
+         }

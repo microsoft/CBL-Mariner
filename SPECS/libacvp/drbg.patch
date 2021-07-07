@@ -1,0 +1,11 @@
+--- a/app/app_drbg.c	2021-02-19 05:30:47.000000000 -0800
++++ b/app/app_drbg.c	2021-06-14 07:39:39.845111831 -0700
+@@ -179,7 +179,7 @@
+              * permitted, with the following exception: for ctrDRBG with no df, the
+              * bit length must equal the seed length.
+              **/
+-            drbg_entropy_len = 0;
++            // drbg_entropy_len = 0;
+         }
+ 
+         switch (tc->mode) {

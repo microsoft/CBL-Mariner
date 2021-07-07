@@ -1,0 +1,390 @@
+--- a/app/app_dsa.c	2021-02-19 05:30:47.000000000 -0800
++++ b/app/app_dsa.c	2021-06-14 14:04:22.351904408 -0700
+@@ -12,6 +12,7 @@
+ #include <openssl/evp.h>
+ #include <openssl/bn.h>
+ #include <openssl/dsa.h>
++#include <openssl/err.h>
+ 
+ #include "app_lcl.h"
+ #include "safe_lib.h"
+@@ -27,8 +28,42 @@
+ static int dsa_current_keygen_tg = 0;
+ static int dsa_current_siggen_tg = 0;
+ 
++int FIPS_dsa_verify(DSA *dsa, const unsigned char *msg, size_t msglen,
++			const EVP_MD *mhash, DSA_SIG *s)
++{
++	int ret=-1;
++	unsigned char dig[EVP_MAX_MD_SIZE];
++	unsigned int dlen;
++
++    if (!EVP_Digest(msg, msglen, dig, &dlen, mhash, NULL)) {
++        printf("EVP_Digest failed \n");
++        return ret;
++    }
++
++	ret=DSA_do_verify(dig, dlen, s, dsa);
++	OPENSSL_cleanse(dig, dlen);
++	return ret;
++}
++
++DSA_SIG * FIPS_dsa_sign(DSA *dsa, const unsigned char *msg, size_t msglen,
++			const EVP_MD *mhash)
++{
++	DSA_SIG *s;
++	unsigned char dig[EVP_MAX_MD_SIZE];
++	unsigned int dlen;
++    
++    if (!EVP_Digest(msg, msglen, dig, &dlen, mhash, NULL)) {
++        printf("EVP_Digest failed \n");
++        return NULL;
++    }
++
++	s = DSA_do_sign(dig, dlen, dsa);
++	OPENSSL_cleanse(dig, dlen);
++	return s;
++}
++
+ void app_dsa_cleanup(void) {
+-    if (group_dsa) FIPS_dsa_free(group_dsa);
++    if (group_dsa) DSA_free(group_dsa);
+     group_dsa = NULL;
+     if (group_p) BN_free(group_p);
+     group_p = NULL;
+@@ -71,7 +106,7 @@
+             /* Free the global "group" variables before re-allocating */
+             app_dsa_cleanup();
+ 
+-            group_dsa = FIPS_dsa_new();
++            group_dsa = DSA_new();
+             if (!group_dsa) {
+                 printf("Failed to allocate DSA strcut\n");
+                 return 1;
+@@ -79,7 +114,7 @@
+             L = tc->l;
+             N = tc->n;
+ 
+-            if (dsa_builtin_paramgen2(group_dsa, L, N, md, NULL, 0, -1,
++            if (FIPS_dsa_builtin_paramgen2(group_dsa, L, N, md, NULL, 0, -1,
+                                       NULL, NULL, NULL, NULL) <= 0) {
+                 printf("Parameter Generation error\n");
+                 return 1;
+@@ -120,8 +155,8 @@
+         tc->y_len = BN_bn2bin(pub_key, tc->y);
+ #if OPENSSL_VERSION_NUMBER >= 0x10100000L
+         if (tmp_pub_key && tmp_priv_key) {
+-            FIPS_bn_free(pub_key);
+-            FIPS_bn_free(priv_key);
++            BN_free(pub_key);
++            BN_free(priv_key);
+         }
+ #endif
+         break;
+@@ -164,7 +199,7 @@
+ 
+         switch (tc->pqg) {
+         case ACVP_DSA_PROBABLE:
+-            dsa = FIPS_dsa_new();
++            dsa = DSA_new();
+             if (!dsa) {
+                 printf("Failed to allocate DSA strcut\n");
+                 return 1;
+@@ -172,16 +207,16 @@
+             L = tc->l;
+             N = tc->n;
+ 
+-            p = FIPS_bn_new();
+-            q = FIPS_bn_new();
++            p = BN_new();
++            q = BN_new();
+             BN_bin2bn(tc->p, tc->p_len, p);
+             BN_bin2bn(tc->q, tc->q_len, q);
+ 
+-            if (dsa_builtin_paramgen2(dsa, L, N, md,
++            if (FIPS_dsa_builtin_paramgen2(dsa, L, N, md,
+                                       tc->seed, tc->seedlen, -1, NULL,
+                                       &counter2, &h2, NULL) < 0) {
+                 printf("Parameter Generation error\n");
+-                FIPS_dsa_free(dsa);
++                DSA_free(dsa);
+                 return 1;
+             }
+ 
+@@ -199,16 +234,16 @@
+             else
+                 r = 1;
+ 
+-            FIPS_bn_free(p);              
+-            FIPS_bn_free(q);              
+-            FIPS_bn_free(p2);              
+-            FIPS_bn_free(q2);              
+-            FIPS_dsa_free(dsa);
++            BN_free(p);              
++            BN_free(q);              
++            BN_free(p2);              
++            BN_free(q2);              
++            DSA_free(dsa);
+             tc->result = r;
+             break;
+ 
+         case ACVP_DSA_CANONICAL:
+-            dsa = FIPS_dsa_new();
++            dsa = DSA_new();
+             if (!dsa) {
+                 printf("Failed to allocate DSA strcut\n");
+                 return 1;
+@@ -216,9 +251,9 @@
+             L = tc->l;
+             N = tc->n;
+ 
+-            p = FIPS_bn_new();
+-            q = FIPS_bn_new();
+-            g = FIPS_bn_new();
++            p = BN_new();
++            q = BN_new();
++            g = BN_new();
+             BN_bin2bn(tc->p, tc->p_len, p);
+             BN_bin2bn(tc->q, tc->q_len, q);
+             BN_bin2bn(tc->g, tc->g_len, g);
+@@ -230,11 +265,11 @@
+             DSA_set0_pqg(dsa, BN_dup(p), BN_dup(q), BN_dup(g));
+ #endif
+ 
+-            if (dsa_builtin_paramgen2(dsa, L, N, md,
++            if (FIPS_dsa_builtin_paramgen2(dsa, L, N, md,
+                                       tc->seed, tc->seedlen, tc->index, NULL,
+                                       &counter2, &h2, NULL) < 0) {
+                 printf("Parameter Generation error\n");
+-                FIPS_dsa_free(dsa);
++                DSA_free(dsa);
+                 return 1;
+             }
+ 
+@@ -251,11 +286,53 @@
+                 r = 1;
+             }
+ 
+-            FIPS_bn_free(p);
+-            FIPS_bn_free(q);
+-            FIPS_bn_free(g);
+-            FIPS_bn_free(g2);
+-            FIPS_dsa_free(dsa);
++            BN_free(p);
++            BN_free(q);
++            BN_free(g);
++            BN_free(g2);
++            DSA_free(dsa);
++            tc->result = r;
++            break;
++        case ACVP_DSA_UNVERIFIABLE:
++            dsa = DSA_new();
++            if (!dsa) {
++                printf("Failed to allocate DSA strcut\n");
++                return 1;
++            }
++            L = tc->l;
++            N = tc->n;
++
++            p = BN_new();
++            q = BN_new();
++            g = BN_new();
++            BN_bin2bn(tc->p, tc->p_len, p);
++            BN_bin2bn(tc->q, tc->q_len, q);
++            BN_bin2bn(tc->g, tc->g_len, g);
++
++            DSA_set0_pqg(dsa, BN_dup(p), BN_dup(q), BN_dup(g));
++
++            if (FIPS_dsa_builtin_paramgen2(dsa, L, N, md,
++                                      tc->seed, tc->seedlen, 0, NULL,
++                                      NULL, &h2, NULL) < 0) {
++                printf("Parameter Generation error\n");
++                DSA_free(dsa);
++                return 1;
++            }
++
++            DSA_get0_pqg(dsa, NULL, NULL, &tmp_g2);
++            g2 = BN_dup(tmp_g2);
++
++            if (BN_cmp(g2, g)) {
++                r = 0;
++            } else {
++                r = 1;
++            }
++
++            BN_free(p);
++            BN_free(q);
++            BN_free(g);
++            BN_free(g2);
++            DSA_free(dsa);
+             tc->result = r;
+             break;
+         default:
+@@ -302,15 +379,15 @@
+             break;
+         }
+ 
+-        dsa = FIPS_dsa_new();
++        dsa = DSA_new();
+         if (!dsa) {
+             printf("Failed to allocate DSA strcut\n");
+             return 1;
+         }
+-        sig = FIPS_dsa_sig_new();
++        sig = DSA_SIG_new();
+         if (!sig) {
+             printf("Failed to allocate SIG strcut\n");
+-            FIPS_dsa_free(dsa);
++            DSA_free(dsa);
+             return 1;
+         }
+         L = tc->l;
+@@ -354,8 +431,8 @@
+         n = tc->msglen;
+         r = FIPS_dsa_verify(dsa, (const unsigned char *)tc->msg, n, md, sig);
+ 
+-        FIPS_dsa_free(dsa);
+-        FIPS_dsa_sig_free(sig);
++        DSA_free(dsa);
++        DSA_SIG_free(sig);
+         /* return result, 0 is failure, 1 is pass */
+         tc->result = r;
+         break;
+@@ -402,7 +479,7 @@
+             /* Free the global "group" variables before re-allocating */
+             app_dsa_cleanup(); 
+ 
+-            group_dsa = FIPS_dsa_new();
++            group_dsa = DSA_new();
+             if (!group_dsa) {
+                 printf("Failed to allocate DSA strcut\n");
+                 return 1;
+@@ -410,7 +487,7 @@
+             L = tc->l;
+             N = tc->n;
+ 
+-            if (dsa_builtin_paramgen2(group_dsa, L, N, md, NULL, 0, -1,
++            if (FIPS_dsa_builtin_paramgen2(group_dsa, L, N, md, NULL, 0, -1,
+                                       NULL, NULL, NULL, NULL) <= 0) {
+                 printf("Parameter Generation error\n");
+                 return 1;
+@@ -460,11 +537,11 @@
+         tc->s_len = BN_bn2bin(sig_s, tc->s);
+ #if OPENSSL_VERSION_NUMBER >= 0x10100000L
+         if (tmp_r && tmp_s) {
+-            FIPS_bn_free(sig_r);
+-            FIPS_bn_free(sig_s);
++            BN_free(sig_r);
++            BN_free(sig_s);
+         }
+ #endif
+-        FIPS_dsa_sig_free(sig);
++        DSA_SIG_free(sig);
+         break;
+ 
+     case ACVP_DSA_MODE_PQGGEN:
+@@ -505,16 +582,45 @@
+ 
+         switch (tc->gen_pq) {
+         case ACVP_DSA_UNVERIFIABLE:
+-            printf("DSA Parameter Generation2 error for %d, not supported\n", tc->gen_pq);
+-            return 1;
++            dsa = DSA_new();
++
++            p = BN_new();
++            q = BN_new();
++            g = BN_new();
++            BN_bin2bn(tc->p, tc->p_len, p);
++            BN_bin2bn(tc->q, tc->q_len, q);
++
++            tmp_p = BN_dup(p);
++            tmp_q = BN_dup(q);
++            tmp_g = BN_dup(g);
++            DSA_set0_pqg(dsa, tmp_p, tmp_q, tmp_g);
+ 
++            L = tc->l;
++            N = tc->n;
++            if (FIPS_dsa_builtin_paramgen2(dsa, L, N, md,
++                                      NULL, 0, 0, NULL,
++                                      NULL, NULL, NULL) <= 0) {
++                ERR_print_errors_fp(stdout);
++                printf("DSA Parameter Generation2 error for %d\n", tc->gen_pq);
++                DSA_free(dsa);
++                return 1;
++            }
++
++            DSA_get0_pqg(dsa, NULL, NULL, &tmp_g1);
++            tc->g_len = BN_bn2bin(tmp_g1, tc->g);
++
++            BN_free(p);
++            BN_free(q);
++            BN_free(g);
++            DSA_free(dsa);
+             break;
++
+         case ACVP_DSA_CANONICAL:
+-            dsa = FIPS_dsa_new();
++            dsa = DSA_new();
+ 
+-            p = FIPS_bn_new();
+-            q = FIPS_bn_new();
+-            g = FIPS_bn_new();
++            p = BN_new();
++            q = BN_new();
++            g = BN_new();
+             BN_bin2bn(tc->p, tc->p_len, p);
+             BN_bin2bn(tc->q, tc->q_len, q);
+ 
+@@ -529,11 +635,11 @@
+ #endif
+             L = tc->l;
+             N = tc->n;
+-            if (dsa_builtin_paramgen2(dsa, L, N, md,
++            if (FIPS_dsa_builtin_paramgen2(dsa, L, N, md,
+                                       tc->seed, tc->seedlen, tc->index, NULL,
+                                       NULL, NULL, NULL) <= 0) {
+                 printf("DSA Parameter Generation2 error for %d\n", tc->gen_pq);
+-                FIPS_dsa_free(dsa);
++                DSA_free(dsa);
+                 return 1;
+             }
+ #if OPENSSL_VERSION_NUMBER <= 0x10100000L
+@@ -542,22 +648,22 @@
+             DSA_get0_pqg(dsa, NULL, NULL, &tmp_g1);
+             tc->g_len = BN_bn2bin(tmp_g1, tc->g);
+ #endif
+-            FIPS_bn_free(p);
+-            FIPS_bn_free(q);
+-            FIPS_bn_free(g);
+-            FIPS_dsa_free(dsa);
++            BN_free(p);
++            BN_free(q);
++            BN_free(g);
++            DSA_free(dsa);
+             break;
+ 
+         case ACVP_DSA_PROBABLE:
+         case ACVP_DSA_PROVABLE:
+-            dsa = FIPS_dsa_new();
++            dsa = DSA_new();
+             L = tc->l;
+             N = tc->n;
+-            if (dsa_builtin_paramgen2(dsa, L, N, md,
++            if (FIPS_dsa_builtin_paramgen2(dsa, L, N, md,
+                                       NULL, 0, -1, seed,
+                                       &counter, &h, NULL) <= 0) {
+                 printf("DSA Parameter Generation 2 error for %d\n", tc->gen_pq);
+-                FIPS_dsa_free(dsa);
++                DSA_free(dsa);
+                 return 1;
+             }
+ 
+@@ -579,7 +685,7 @@
+             memcpy_s(tc->seed, DSA_MAX_SEED, &seed, EVP_MD_size(md));
+             tc->seedlen = EVP_MD_size(md);
+             tc->counter = counter;
+-            FIPS_dsa_free(dsa);
++            DSA_free(dsa);
+             break;
+         default:
+             printf("Invalid DSA gen_pq %d\n", tc->gen_pq);

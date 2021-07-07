@@ -1,0 +1,11 @@
+--- a/app/app_aes.c	2021-02-19 05:30:47.000000000 -0800
++++ b/app/app_aes.c	2021-06-14 21:23:56.975745974 -0700
+@@ -497,7 +497,7 @@
+ 
+ #ifdef OPENSSL_KWP
+         if (tc->cipher == ACVP_AES_KWP) {
+-            EVP_CIPHER_CTX_set_flags(cipher_ctx, EVP_CIPHER_CTX_FLAG_UNWRAP_WITHPAD);
++            // EVP_CIPHER_CTX_set_flags(cipher_ctx, EVP_CIPHER_CTX_FLAG_UNWRAP_WITHPAD);
+         }
+ #endif
+         c_len = EVP_Cipher(cipher_ctx, tc->pt, tc->ct, tc->ct_len);

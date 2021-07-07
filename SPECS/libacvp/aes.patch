@@ -1,0 +1,29 @@
+--- a/app/app_aes.c	2021-02-19 05:30:47.000000000 -0800
++++ b/app/app_aes.c	2021-03-22 10:21:37.175142569 -0700
+@@ -48,7 +48,7 @@
+     /* Begin encrypt code section */
+     cipher_ctx = glb_cipher_ctx;
+     if ((tc->test_type != ACVP_SYM_TEST_TYPE_MCT)) {
+-        EVP_CIPHER_CTX_init(cipher_ctx);
++        EVP_CIPHER_CTX_reset(cipher_ctx);
+     }
+ 
+     switch (tc->cipher) {
+@@ -376,7 +376,7 @@
+ 
+     /* Begin encrypt code section */
+     cipher_ctx = EVP_CIPHER_CTX_new();
+-    EVP_CIPHER_CTX_init(cipher_ctx);
++    EVP_CIPHER_CTX_reset(cipher_ctx);
+ 
+     switch (tc->cipher) {
+     case ACVP_AES_KW:
+@@ -554,7 +554,7 @@
+         rc = 1;
+         goto end;
+     }
+-    EVP_CIPHER_CTX_init(cipher_ctx);
++    EVP_CIPHER_CTX_reset(cipher_ctx);
+ 
+     /* Validate key length and assign OpenSSL EVP cipher */
+     switch (tc->cipher) {

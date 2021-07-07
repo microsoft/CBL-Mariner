@@ -1,0 +1,117 @@
+--- a/app/app_ecdsa.c	2021-02-19 05:30:47.000000000 -0800
++++ b/app/app_ecdsa.c	2021-03-22 11:31:59.277940144 -0700
+@@ -22,6 +22,41 @@
+ static EC_KEY *ecdsa_group_key = NULL;
+ static int ecdsa_current_tg = 0;
+ 
++int FIPS_ecdsa_verify_md(EC_KEY *key, const unsigned char *msg, size_t msglen,
++			const EVP_MD *mhash, ECDSA_SIG *s)
++{
++	int ret=-1;
++	unsigned char dig[EVP_MAX_MD_SIZE];
++	unsigned int dlen;
++
++    if (!EVP_Digest(msg, msglen, dig, &dlen, mhash, NULL)) {
++        printf("EVP_digest failed \n");
++        return ret;
++    }
++
++	ret=ECDSA_do_verify(dig, dlen, s, key);
++	OPENSSL_cleanse(dig, dlen);
++	return ret;
++}
++
++ECDSA_SIG * FIPS_ecdsa_sign_md(EC_KEY *key,
++			const unsigned char *msg, size_t msglen,
++			const EVP_MD *mhash)
++{
++	ECDSA_SIG *s;
++	unsigned char dig[EVP_MAX_MD_SIZE];
++	unsigned int dlen;
++
++    if (!EVP_Digest(msg, msglen, dig, &dlen, mhash, NULL)) {
++        printf("EVP_digest failed \n");
++        return NULL;
++    }
++    
++	s = ECDSA_do_sign(dig, dlen, key);
++	OPENSSL_cleanse(dig, dlen);
++	return s;
++}
++
+ void app_ecdsa_cleanup(void) {
+     if (ecdsa_group_Qx) BN_free(ecdsa_group_Qx);
+     ecdsa_group_Qx = NULL;
+@@ -51,7 +86,7 @@
+     if (EC_METHOD_get_field_type(meth) == NID_X9_62_prime_field) {
+         rv = EC_POINT_get_affine_coordinates_GFp(grp, pt, x, y, ctx);
+     } else {
+-        rv = EC_POINT_get_affine_coordinates_GF2m(grp, pt, x, y, ctx);
++        rv = EC_POINT_get_affine_coordinates(grp, pt, x, y, ctx);
+     }
+ 
+ end:
+@@ -171,8 +206,8 @@
+ 
+     switch (mode) {
+     case ACVP_ECDSA_KEYGEN:
+-        Qx = FIPS_bn_new();
+-        Qy = FIPS_bn_new();
++        Qx = BN_new();
++        Qy = BN_new();
+         if (!Qx || !Qy) {
+             printf("Error BIGNUM malloc\n");
+             goto err;
+@@ -201,8 +236,8 @@
+         tc->d_len = BN_bn2bin(d, tc->d);
+         break;
+     case ACVP_ECDSA_KEYVER:
+-        Qx = FIPS_bn_new();
+-        Qy = FIPS_bn_new();
++        Qx = BN_new();
++        Qy = BN_new();
+         if (!tc->qx || !tc->qy) {
+             printf("missing qx or qy: ecdsa keyver\n");
+             goto err;
+@@ -238,8 +273,8 @@
+             if (ecdsa_group_Qy) BN_free(ecdsa_group_Qy);
+             ecdsa_group_Qy = NULL;
+ 
+-            ecdsa_group_Qx = FIPS_bn_new();
+-            ecdsa_group_Qy = FIPS_bn_new();
++            ecdsa_group_Qx = BN_new();
++            ecdsa_group_Qy = BN_new();
+             if (!ecdsa_group_Qx || !ecdsa_group_Qy) {
+                 printf("Error BIGNUM malloc\n");
+                 goto err;
+@@ -317,13 +352,13 @@
+         r = sig->r;
+         s = sig->s;
+ #else
+-        r = FIPS_bn_new();
+-        s = FIPS_bn_new();
++        r = BN_new();
++        s = BN_new();
+         ECDSA_SIG_set0(sig, r, s);
+ #endif
+ 
+-        Qx = FIPS_bn_new();
+-        Qy = FIPS_bn_new();
++        Qx = BN_new();
++        Qy = BN_new();
+ 
+         if (!Qx || !Qy) {
+             printf("Error BIGNUM conversion\n");
+@@ -453,9 +488,9 @@
+     rv = 0;
+ 
+ err:
+-    if (sig) FIPS_ecdsa_sig_free(sig);
+-    if (Qx) FIPS_bn_free(Qx);
+-    if (Qy) FIPS_bn_free(Qy);
++    if (sig) ECDSA_SIG_free(sig);
++    if (Qx) BN_free(Qx);
++    if (Qy) BN_free(Qy);
+     if (key) EC_KEY_free(key);
+     return rv;
+ }
