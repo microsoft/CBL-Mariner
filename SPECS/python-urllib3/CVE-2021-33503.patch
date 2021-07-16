@@ -1,0 +1,61 @@
+From 2d4a3fee6de2fa45eb82169361918f759269b4ec Mon Sep 17 00:00:00 2001
+From: Seth Michael Larson <sethmichaellarson@gmail.com>
+Date: Wed, 26 May 2021 10:43:12 -0500
+Subject: [PATCH] Improve performance of sub-authority splitting in URL
+
+---
+ src/urllib3/util/url.py |  8 +++++---
+ test/test_util.py       | 10 ++++++++++
+ 2 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/src/urllib3/util/url.py b/src/urllib3/util/url.py
+index 6ff238fe3c..81a03da9e3 100644
+--- a/src/urllib3/util/url.py
++++ b/src/urllib3/util/url.py
+@@ -63,12 +63,12 @@
+ BRACELESS_IPV6_ADDRZ_RE = re.compile("^" + IPV6_ADDRZ_PAT[2:-2] + "$")
+ ZONE_ID_RE = re.compile("(" + ZONE_ID_PAT + r")\]$")
+ 
+-SUBAUTHORITY_PAT = (u"^(?:(.*)@)?(%s|%s|%s)(?::([0-9]{0,5}))?$") % (
++_HOST_PORT_PAT = ("^(%s|%s|%s)(?::([0-9]{0,5}))?$") % (
+     REG_NAME_PAT,
+     IPV4_PAT,
+     IPV6_ADDRZ_PAT,
+ )
+-SUBAUTHORITY_RE = re.compile(SUBAUTHORITY_PAT, re.UNICODE | re.DOTALL)
++_HOST_PORT_RE = re.compile(_HOST_PORT_PAT, re.UNICODE | re.DOTALL)
+ 
+ UNRESERVED_CHARS = set(
+     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-~"
+@@ -365,7 +365,9 @@ def parse_url(url):
+             scheme = scheme.lower()
+ 
+         if authority:
+-            auth, host, port = SUBAUTHORITY_RE.match(authority).groups()
++            auth, _, host_port = authority.rpartition("@")
++            auth = auth or None
++            host, port = _HOST_PORT_RE.match(host_port).groups()
+             if auth and normalize_uri:
+                 auth = _encode_invalid_chars(auth, USERINFO_CHARS)
+             if port == "":
+diff --git a/test/test_util.py b/test/test_util.py
+index a5b68a084b..88409e2d6c 100644
+--- a/test/test_util.py
++++ b/test/test_util.py
+@@ -438,6 +438,16 @@ def test_netloc(self, url, expected_netloc):
+                 fragment="hash",
+             ),
+         ),
++        # Tons of '@' causing backtracking
++        ("https://" + ("@" * 10000) + "[", False),
++        (
++            "https://user:" + ("@" * 10000) + "example.com",
++            Url(
++                scheme="https",
++                auth="user:" + ("%40" * 9999),
++                host="example.com",
++            ),
++        ),
+     ]
+ 
+     @pytest.mark.parametrize("url, expected_url", url_vulnerabilities)

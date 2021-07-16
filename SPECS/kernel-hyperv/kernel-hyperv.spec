@@ -4,7 +4,7 @@
 Summary:        Linux Kernel optimized for Hyper-V
 Name:           kernel-hyperv
 Version:        5.10.42.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -267,6 +267,9 @@ ln -sf linux-%{uname_r}.cfg /boot/mariner.cfg
 %{_libdir}/perf/include/bpf/*
 
 %changelog
+* Wed Jun 30 2021 Chris Co <chrco@microsoft.com> - 5.10.42.1-4
+- Bump release number to match kernel release
+
 * Tue Jun 22 2021 Suresh Babu Chalamalasetty <schalam@microsoft.com> - 5.10.42.1-3
 - Enable CONFIG_IOSCHED_BFQ and CONFIG_BFQ_GROUP_IOSCHED configs
 
