@@ -6,7 +6,7 @@
 Summary:        GRand Unified Bootloader
 Name:           grub2
 Version:        2.06~rc1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -46,6 +46,8 @@ Patch0156:      0156-efilinux-Fix-integer-overflows-in-grub_cmd_initrd.patch
 Patch0157:      0157-linuxefi-fail-kernel-validation-without-shim-protoco.patch
 # Fix to prevent user from overwriting signed grub binary using grub2-install
 Patch0166:      0166-grub-install-disable-support-for-EFI-platforms.patch
+# TPM measurement fix
+Patch0167:      0167-remove-shim-lock-verification.patch
 # Add nopatches for tooling
 Patch1000:      CVE-2021-3418.nopatch
 Patch1001:      CVE-2020-14372.nopatch
@@ -270,6 +272,9 @@ cp $GRUB_MODULE_SOURCE $EFI_BOOT_DIR/$GRUB_MODULE_NAME
 %endif
 
 %changelog
+* Thu Jun 03 2021 Henry Li <lihl@microsoft.com> - 2.06~rc1-5
+- Apply remove-shim-lock-verification.patch to remove duplicate TPM measurement
+
 * Fri Apr 16 2021 Chris Co <chrco@microsoft.com> - 2.06~rc1-4
 - Bump version to match grub-efi-binary-signed spec
 

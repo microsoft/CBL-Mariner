@@ -1,0 +1,32 @@
+From 54592674b9501be6474abac5dd37d32c3f9371b2 Mon Sep 17 00:00:00 2001
+From: Henry Li <lihl@microsoft.com>
+Date: Wed, 9 Jun 2021 15:12:30 -0700
+Subject: [PATCH] remove shim lock verification
+
+---
+ grub-core/kern/efi/sb.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/grub-core/kern/efi/sb.c b/grub-core/kern/efi/sb.c
+index 96d237722..d89fc0214 100644
+--- a/grub-core/kern/efi/sb.c
++++ b/grub-core/kern/efi/sb.c
+@@ -142,13 +142,8 @@ shim_lock_verifier_init (grub_file_t io __attribute__ ((unused)),
+ static grub_err_t
+ shim_lock_verifier_write (void *context __attribute__ ((unused)), void *buf, grub_size_t size)
+ {
+-  grub_efi_shim_lock_protocol_t *sl = grub_efi_locate_protocol (&shim_lock_guid, 0);
+-
+-  if (!sl)
+-    return grub_error (GRUB_ERR_ACCESS_DENIED, N_("shim_lock protocol not found"));
+-
+-  if (sl->verify (buf, size) != GRUB_EFI_SUCCESS)
+-    return grub_error (GRUB_ERR_BAD_SIGNATURE, N_("bad shim signature"));
++  // Do not need to do the shim_lock verification here since it will be
++  // done afterwards before kernel image gets loaded
+ 
+   return GRUB_ERR_NONE;
+ }
+-- 
+2.17.1
+
