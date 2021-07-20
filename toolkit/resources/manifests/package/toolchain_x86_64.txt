@@ -158,7 +158,7 @@ json-c-debuginfo-0.14-3.cm1.x86_64.rpm
 json-c-devel-0.14-3.cm1.x86_64.rpm
 kbd-2.0.4-5.cm1.x86_64.rpm
 kbd-debuginfo-2.0.4-5.cm1.x86_64.rpm
-kernel-headers-5.10.47.1-2.cm1.noarch.rpm
+kernel-headers-5.10.52.1-1.cm1.noarch.rpm
 kmod-25-4.cm1.x86_64.rpm
 kmod-debuginfo-25-4.cm1.x86_64.rpm
 kmod-devel-25-4.cm1.x86_64.rpm

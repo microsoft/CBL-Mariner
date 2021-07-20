@@ -1,5 +1,5 @@
 filesystem-1.1-7.cm1.aarch64.rpm
-kernel-headers-5.10.47.1-2.cm1.noarch.rpm
+kernel-headers-5.10.52.1-1.cm1.noarch.rpm
 glibc-2.28-18.cm1.aarch64.rpm
 glibc-devel-2.28-18.cm1.aarch64.rpm
 glibc-i18n-2.28-18.cm1.aarch64.rpm
