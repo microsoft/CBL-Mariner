@@ -5,8 +5,8 @@
 %global __brp_python_bytecompile %{nil}
 Summary:        Mariner specific rpm macro files
 Name:           mariner-rpm-macros
-Version:        1.0
-Release:        17%{?dist}
+Version:        2.0
+Release:        1%{?dist}
 License:        GPL+ AND MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -112,6 +112,9 @@ install -p -m 644 -t %{buildroot}%{rcluadir}/srpm forge.lua
 %{_rpmconfigdir}/macros.d/macros.check
 
 %changelog
+* Thu Jul 08 2021 Jon Slobodzian <joslobo@microsoft.com> - 2.0-1
+- Version update for 2.0.
+
 * Tue Jun 01 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 1.0-17
 - Adding font macros from the "fontpackages-devel" package.
 
