@@ -29,7 +29,7 @@ Any Linux distribution, including CBL-Mariner, benefits from contributions by th
 
 1) The [Photon OS Project](https://vmware.github.io/photon/) for SPEC files originating from the Photon distribution.   
 
-2) [The Fedora Project](https://start.fedoraproject.org/) for SPEC files, particularly with respect to QT, DNF and several of their dependencies. 
+2) [The Fedora Project](https://start.fedoraproject.org/) for SPEC files, particularly with respect to Qt, DNF and several of their dependencies. 
 
 3) [GNU](https://www.gnu.org/) and the [Free Software Foundation](https://www.fsf.org/)
 
