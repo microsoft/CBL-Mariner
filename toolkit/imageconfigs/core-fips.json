@@ -5,7 +5,7 @@
             "MaxSize": 2048,
             "Artifacts": [
                 {
-                    "Name": "core",
+                    "Name": "core-fips",
                     "Type": "vhd"
                 }
             ],
