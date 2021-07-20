@@ -16,6 +16,7 @@ Feel free to delete sections of the template which do not apply to your PR, or a
 - [ ] All source files have up-to-date hashes in the `*.signatures.json` files
 - [ ] `sudo make go-tidy-all` and `sudo make go-test-coverage` pass
 - [ ] Documentation has been updated to match any changes to the build system
+- [ ] Changelog entry has been added for notable changes (`./CHANGELOG.md`)
 - [ ] Ready to merge
 
 ---
