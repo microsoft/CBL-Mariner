@@ -13,6 +13,11 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
 or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
+
+# Pull Requests
+
+Please raise a PR against base-branch `1.0-dev` instead of `1.0`.
+
 # Security Vulnerabilities
 
 <!-- BEGIN MICROSOFT SECURITY.MD V0.0.3 BLOCK -->
