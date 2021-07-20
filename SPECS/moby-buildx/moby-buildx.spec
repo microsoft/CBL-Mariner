@@ -1,7 +1,7 @@
 Summary: A Docker CLI plugin for extended build capabilities with BuildKit
 Name: moby-buildx
 Version: 0.4.1+azure
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: ASL 2.0
 Group: Tools/Container
 
@@ -13,6 +13,8 @@ Group: Tools/Container
 %define vernum %(echo "%{version}" | cut -d+ -f1)
 #Source0: https://github.com/docker/buildx/archive/v%{vernum}.tar.gz
 Source0: moby-buildx-%{version}.tar.gz
+Patch0: CVE-2019-5736_0a8e41.patch
+Patch1: CVE-2019-5736_6635b4.patch
 Source1: LICENSE
 Source2: NOTICE
 URL: https://www.github.com/docker/buildx
@@ -37,7 +39,7 @@ A Docker CLI plugin for extended build capabilities with BuildKit
 %define OUR_GOPATH %{_topdir}/.gopath
 
 %prep
-%setup -q -n %{name}-%{version} -c
+%autosetup -n %{name}-%{version} -c
 mkdir -p %{OUR_GOPATH}/src/github.com/docker
 ln -sfT %{_topdir}/BUILD/%{name}-%{version} %{OUR_GOPATH}/src/github.com/docker/buildx
 
@@ -79,6 +81,9 @@ cp %{SOURCE2} %{buildroot}/usr/share/doc/%{name}-%{version}/NOTICE
 %{_libexecdir}/docker/cli-plugins/docker-buildx
 
 %changelog
+*   Fri Jul 16 2021 Mariner Autopatcher <cblmargh@microsoft.com> 0.4.1+azure-4
+-   Added patch file(s) CVE-2019-5736_0a8e41.patch,
+-   CVE-2019-5736_6635b4.patch
 * Tue Jun 08 2021 Henry Beberman <henry.beberman@microsoft.com> 0.4.1+azure-3
 - Increment release to force republishing using golang 1.15.13.
 * Thu Dec 10 2020 Andrew Phelps <anphel@microsoft.com> 0.4.1+azure-2
